@@ -1,3 +1,6 @@
+#ifndef IMAGE_H
+#define IMAGE_H
+
 #include <stdint.h>
 #include <cstddef>
 
@@ -42,3 +45,5 @@ Color blue(Pixel pl);
 
 Pixel pixel(Color red, Color green, Color blue);
 }
+
+#endif//IMAGE_H

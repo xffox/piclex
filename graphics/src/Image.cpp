@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "GraphicsExceptions.h"
+
 namespace graphics
 {
 
@@ -26,8 +28,6 @@ Image::~Image()
 Image::Image(const Image &that)
     :mWidth(that.mWidth), mHeight(that.mHeight), mData(NULL), mDataSize(0)
 {
-    // TODO: exception
-
     allocateData(mWidth, mHeight);
 
     memcpy(mData, that.mData, sizeof(Pixel)*mWidth*mHeight);
@@ -35,8 +35,6 @@ Image::Image(const Image &that)
 
 Image &Image::operator=(const Image &that)
 {
-    // TODO: exception
-
     mWidth = that.mWidth;
     mHeight = that.mHeight;
 
@@ -59,13 +57,15 @@ bool Image::operator==(const Image &that) const
 
 Pixel Image::get(Coordinate x, Coordinate y) const
 {
-    // TODO: exception
+    if(x >= mWidth || y >= mHeight)
+        throw OutOfBoundError(x, y, mWidth, mHeight);
     return mData[mWidth*y + x];
 }
 
 void Image::set(Coordinate x, Coordinate y, Pixel pl)
 {
-    // TODO: exception
+    if(x >= mWidth || y >= mHeight)
+        throw OutOfBoundError(x, y, mWidth, mHeight);
     mData[mWidth*y + x] = pl;
 }
 
