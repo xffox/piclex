@@ -1,0 +1,10 @@
+piclex
+
+build:
+
+'build' - example out-of-source directory name
+
+mkdir build
+cd build
+cmake ..
+make && make test
