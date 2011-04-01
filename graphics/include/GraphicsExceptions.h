@@ -43,6 +43,7 @@ private:
 
 class InternalError
 {
+public:
     InternalError()
     {
     }

@@ -1,9 +1,10 @@
 #include <iostream>
 
 #include "Image.h"
+#include "Logger.h"
 
 using namespace graphics;
-
+using namespace base;
 
 namespace
 {
@@ -17,10 +18,18 @@ void printPixel(Pixel pl)
 
 int main()
 {
+    Log().setLogWriter( new TimestampedLogWriter(new FileLogWriter(
+                    "tester.log")) );
+
     Image a(100, 200);
     Image b(a);
     Image c;
     c = a;
+
+    Log().setSeverity(Logger::DEBUG);
+    Log().debug("test %d", 1);
+    Log().warning("test %d", 2);
+    Log().error("test %s", "3");
 
     std::cout<<"("<<c.getWidth()<<","<<c.getHeight()<<")"<<std::endl;
 

@@ -9,4 +9,5 @@ if(CPPUNIT_FOUND)
     target_link_libraries(graphics_test ${CPPUNIT_LIBRARIES} graphics)
 
     add_test(GraphicsTest "${EXECUTABLE_OUTPUT_PATH}/graphics_test")
+#TODO: message
 endif(CPPUNIT_FOUND)
