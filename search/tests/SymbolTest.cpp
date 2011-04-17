@@ -46,7 +46,7 @@ public:
         Symbol a(TERMINAL, 41);
         Symbol b(TERMINAL, 42);
 
-        CPPUNIT_ASSERT(!(a == b));
+        CPPUNIT_ASSERT(a != b);
     }
 
     void testComparison3()
@@ -54,7 +54,7 @@ public:
         Symbol a(TERMINAL, 42);
         Symbol b(NONTERMINAL, 42);
 
-        CPPUNIT_ASSERT(!(a == b));
+        CPPUNIT_ASSERT(a != b);
     }
 
     void testComparison4()
@@ -62,7 +62,7 @@ public:
         Symbol a(TERMINAL, 41);
         Symbol b(NONTERMINAL, 42);
 
-        CPPUNIT_ASSERT(!(a == b));
+        CPPUNIT_ASSERT(a != b);
     }
 };
 
