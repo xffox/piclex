@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <list>
-#include <map>
 
 #include "Grammar.h"
 
@@ -11,19 +10,40 @@ namespace search
 {
 class ParserInstance
 {
-    typedef std::vector<Rule> Rules;
+public:
+    class State
+    {
+    public:
+        State(const Rule &rule, size_t originPosition);
+
+        const Symbol &getHead() const;
+        const Rule &getRule() const;
+
+        size_t getRulePosition() const;
+
+        size_t getOriginPosition() const;
+        size_t getCompletePosition() const;
+
+        const Symbol &getNext() const;
+        void shift(size_t strPosition);
+        bool isFinished() const;
+
+    private:
+        Rule mRule;
+        size_t mRulePosition;
+        size_t mOriginPosition;
+        size_t mCompletePosition;
+    };
+
+    typedef std::vector<State> States;
 
 public:
     ParserInstance(const Grammar &grammar, const std::string &str);
     virtual ~ParserInstance();
 
-    bool isValid() const;
+    void parse();
 
-protected:
-    const Sentence &getParsedSentence() const
-    {
-        return mParsedSentence;
-    }
+    bool isValid() const;
 
     const Grammar &getGrammar() const
     {
@@ -35,38 +55,35 @@ protected:
         return mStr;
     }
 
+protected:
+    const std::vector<States> &getStatesQueue() const
+    {
+        return mStatesQueue;
+    }
+
 private:
-    virtual void processRewrite(size_t position, size_t ruleIndex);
-
-    bool parse();
-
+    virtual void rewrite();
     bool process();
-    size_t process(size_t position);
-
-    void rewriteBodyWithHead(size_t position, size_t ruleIndex);
-
-    size_t getSubsentenceMaxRuleLevel(size_t beginPosition) const;
-    size_t getSubsentenceMaxSymbolLevel(size_t beginPosition) const;
-    size_t getSubsentenceMaxSymbolLevel(size_t beginPosition,
-            size_t symbols) const;
-
-    size_t getRule(size_t position) const;
-    const Rules getRules(const Symbol &symbol) const;
-    const Rules getRules(const Symbol &symbol,
-            size_t level) const;
-
-    size_t getRuleLevel(size_t ruleIndex) const;
 
     size_t getRuleIndex(const Rule &rule) const;
+    Grammar::Rules getRules(const Symbol &head) const;
+
+    size_t addStates(const Grammar::Rules &rules, size_t position);
+    bool addState(const State &state, size_t position);
 
 private:
-    Sentence mParsedSentence;
-
     Grammar mGrammar;
     Sentence mStr;
 
     bool mValid;
+
+    std::vector<States> mStatesQueue;
+    size_t mStrPosition;
 };
+
+bool operator==(const ParserInstance::State &left,
+        const ParserInstance::State &right);
+
 }
 
 #endif//PARSE_INSTANCE_H

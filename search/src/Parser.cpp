@@ -17,6 +17,7 @@ Parser::~Parser()
 bool Parser::parse(const std::string &str) const
 {
     ParserInstance instance(mGrammar, str);
+    instance.parse();
     return instance.isValid();
 }
 }

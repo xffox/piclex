@@ -8,6 +8,7 @@ if(CPPUNIT_FOUND)
     add_executable(search_test test.cpp
         SymbolTest.cpp
         ParserTest.cpp
+        TreeTest.cpp
         )
     target_link_libraries(search_test ${CPPUNIT_LIBRARIES} search)
 

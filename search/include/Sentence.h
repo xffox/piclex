@@ -11,7 +11,9 @@ namespace search
 typedef std::vector<Symbol> Sentence;
 
 Sentence sentence(const std::string &str);
-const std::string makeString(const Sentence &sentence);
+std::string makeString(const Sentence &sentence);
+std::string makeString(const Sentence &sentence,
+        size_t begin, size_t end);
 }
 
 #endif//SENTENCE_H

@@ -10,8 +10,8 @@ class BaseException
 class OutOfBoundError: public BaseException
 {
 public:
-    OutOfBoundError(size_t index, size_t length)
-        :mIndex(index), mLength(length)
+    OutOfBoundError(size_t index, size_t bound)
+        :mIndex(index), mBound(bound)
     {
     }
 
@@ -20,17 +20,21 @@ public:
         return mIndex;
     }
 
-    size_t getLength() const
+    size_t getBound() const
     {
-        return mLength;
+        return mBound;
     }
 
 private:
     size_t mIndex;
-    size_t mLength;
+    size_t mBound;
 };
 
 class NotFoundError: public BaseException
+{
+};
+
+class InvalidArgument: public BaseException
 {
 };
 

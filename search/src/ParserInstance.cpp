@@ -3,6 +3,7 @@
 #include <cassert>
 
 #include "Logger.h"
+#include "BaseExceptions.h"
 
 using namespace base;
 
@@ -12,9 +13,8 @@ ParserInstance::ParserInstance(const Grammar &grammar,
         const std::string &str)
     :mGrammar(grammar), mStr(sentence(str))
     ,mValid(false)
+    ,mStrPosition(0)
 {
-    mParsedSentence = mStr;
-    mValid = parse();
 }
 
 ParserInstance::~ParserInstance()
@@ -26,184 +26,105 @@ bool ParserInstance::isValid() const
     return mValid;
 }
 
-bool ParserInstance::parse()
+void ParserInstance::parse()
 {
-    return process();
+    if( (mValid = process()) )
+        rewrite();
+}
+
+void ParserInstance::rewrite()
+{
 }
 
 bool ParserInstance::process()
 {
-    size_t position = 0;
+    Log().debug("parse %s", makeString(mStr).c_str());
 
-    size_t ruleIndex = 0;
-    const size_t rulesCount = mGrammar.getRulesCount();
+    Grammar::Rules rules = getRules(mGrammar.getStartSymbol());
+    addStates(rules, mStrPosition);
 
-    Log().debug("parse begin");
-    Log().debug("parse: %s", makeString(mParsedSentence).c_str());
-
-    position = 0;
-    while(position < mParsedSentence.size())
+    bool newStateAdded = false;
+    Log().debug("position: %lu", mStrPosition);
+    while(mStrPosition <= mStr.size() && mStrPosition < mStatesQueue.size())
     {
-        if((ruleIndex = process(position)) < rulesCount)
+
+        newStateAdded = false;
+
+//        States::const_iterator iter = mStatesQueue[mStrPosition].begin();
+        States states = mStatesQueue[mStrPosition];
+        size_t i = 0;
+//        for(; iter != mStatesQueue[mStrPosition].end(); ++iter)
+        for(; i < states.size(); ++i)
         {
-            position -= mGrammar.getRule(ruleIndex).getBodyLength() - 1;
-
-            Log().debug("parse: %s", makeString(mParsedSentence).c_str());
-
-            position = 0;
-        }
-        else
-        {
-            ++position;
-        }
-    }
-
-    bool valid = mParsedSentence.size() == 1 &&
-        mParsedSentence[0] == mGrammar.getStartSymbol();
-
-    Log().debug("sentence %s", valid?"valid":"invalid");
-    Log().debug("parse end");
-
-    return valid;
-}
-
-size_t ParserInstance::process(size_t position)
-{
-    size_t ruleIndex = 0;
-    if(position < mParsedSentence.size())
-    {
-        ruleIndex = getRule(position);
-        if(ruleIndex < mGrammar.getRulesCount())
-        {
-            if( getSubsentenceMaxSymbolLevel(position,
-                        mGrammar.getRule(ruleIndex).getBodyLength()) >=
-                    getSubsentenceMaxSymbolLevel(position +
-                        mGrammar.getRule(ruleIndex).getBodyLength()) )
+//            if(iter->isFinished())
+            if(states[i].isFinished())
             {
-                processRewrite(position, ruleIndex);
-
-                rewriteBodyWithHead(position, ruleIndex);
-
-                return ruleIndex;
+//                States::const_iterator prevIter =
+//                    mStatesQueue[iter->getOriginPosition()].begin();
+//                States::const_iterator prevIter =
+//                    mStatesQueue[states[i].getOriginPosition()].begin();
+//                for(; prevIter != mStatesQueue[iter->getOriginPosition()].end();
+//                        ++prevIter)
+                States prevStates = mStatesQueue[states[i].getOriginPosition()];
+                size_t j = 0;
+//                for(; prevIter != 
+//                        mStatesQueue[states[i].getOriginPosition()].end();
+//                        ++prevIter)
+                for(; j < prevStates.size(); ++j)
+                {
+//                    if(prevIter->getNext() == iter->getHead())
+                    if(!prevStates[j].isFinished() &&
+                            prevStates[j].getNext() == states[i].getHead())
+                    {
+//                        State state(*prevIter);
+                        State state(prevStates[j]);
+                        state.shift(mStrPosition);
+                        if(addState(state, mStrPosition))
+                        {
+                            newStateAdded = true;
+                        }
+                    }
+                }
             }
-        }
-    }
-
-    return mGrammar.getRulesCount();
-}
-
-size_t ParserInstance::getRule(size_t position) const
-{
-    if(position >= mParsedSentence.size())
-        return mGrammar.getRulesCount();;
-
-    size_t ruleIndex = mGrammar.getRulesCount();
-
-    Rules rules = getRules(mParsedSentence[position]);
-
-    size_t processedSymbols = 0;
-    Rules::iterator rulesIter;
-    while(rules.size() > 0)
-    {
-        rulesIter = rules.begin();
-        while(rulesIter != rules.end())
-        {
-            if(processedSymbols < rulesIter->getBodyLength())
+//            else if(iter->getNext() == mStr[mStrPosition])
+            else if(mStrPosition < mStr.size() &&
+                    states[i].getNext() == mStr[mStrPosition])
             {
-                if(position + processedSymbols >= mParsedSentence.size() ||
-                        mParsedSentence[position + processedSymbols] !=
-                        rulesIter->getBody(processedSymbols))
-                    rulesIter = rules.erase(rulesIter);
-                else
-                    ++rulesIter;
+//                State state(*iter);
+                State state(states[i]);
+                state.shift(mStrPosition + 1);
+                addState(state, mStrPosition + 1);
             }
             else
             {
-                ruleIndex = getRuleIndex(*rulesIter);
-                assert(ruleIndex < mGrammar.getRulesCount());
-                if(rules.size() == 1)
-                    return ruleIndex;
-
-                rulesIter = rules.erase(rulesIter);
+//                rules = getRules(iter->getNext());
+                rules = getRules(states[i].getNext());
+                if(addStates(rules, mStrPosition))
+                    newStateAdded = true;
             }
         }
 
-        ++processedSymbols;
-    }
-
-    return ruleIndex;
-}
-
-size_t ParserInstance::getSubsentenceMaxRuleLevel(size_t beginPosition) const
-{
-    size_t maxLevel = 0;
-    size_t position = beginPosition;
-    size_t ruleIndex = 0;
-    while(position < mParsedSentence.size())
-    {
-        ruleIndex = getRule(position);
-        if(ruleIndex < mGrammar.getRulesCount())
+        //TODO: check if need this
+        if(!newStateAdded)
         {
-            if(getRuleLevel(ruleIndex) > maxLevel)
-                maxLevel = getRuleLevel(ruleIndex);
-
-            position += mGrammar.getRule(ruleIndex).getBodyLength();
-        }
-        else
-        {
-            ++position;
+            ++mStrPosition;
+            Log().debug("position: %lu", mStrPosition);
         }
     }
 
-    return maxLevel;
-}
-
-size_t ParserInstance::getSubsentenceMaxSymbolLevel(size_t beginPosition) const
-{
-    return getSubsentenceMaxSymbolLevel(beginPosition, mParsedSentence.size() -
-            beginPosition);
-}
-
-size_t ParserInstance::getSubsentenceMaxSymbolLevel(size_t beginPosition,
-        size_t symbols) const
-{
-    size_t maxLevel = 0;
-    size_t position = beginPosition;
-    while(position < mParsedSentence.size() &&
-            position - beginPosition < symbols)
+    bool valid = false;
+    if(mStatesQueue.size() > 0 && mStatesQueue.size() == mStr.size() + 1)
     {
-        if(mGrammar.getSymbolLevel(mParsedSentence[position]) > maxLevel)
-            maxLevel = mGrammar.getSymbolLevel(mParsedSentence[position]);
-
-        ++position;
+        States::const_iterator iter = mStatesQueue.back().begin();
+        for(; iter != mStatesQueue.back().end(); ++iter)
+            if(iter->getHead() == mGrammar.getStartSymbol())
+                if(iter->isFinished())
+                    valid = true;
     }
 
-    return maxLevel;
-}
+    Log().debug("str %s", valid?"valid":"invalid");
 
-const ParserInstance::Rules ParserInstance::getRules(const Symbol &symbol) const
-{
-    Rules rules;
-    for(size_t i = 0; i < mGrammar.getRulesCount(); ++i)
-        if(mGrammar.getRule(i).getBody(0) == symbol)
-            rules.push_back(mGrammar.getRule(i));
-    return rules;
-}
-
-const ParserInstance::Rules ParserInstance::getRules(const Symbol &symbol,
-        size_t level) const
-{
-    Rules rules;
-    for(size_t i = 0; i < mGrammar.getRulesCount(); ++i)
-        if(mGrammar.getRule(i).getBody(0) == symbol &&
-                getRuleLevel(i) >= level)
-            rules.push_back(mGrammar.getRule(i));
-    return rules;
-}
-
-size_t ParserInstance::getRuleLevel(size_t ruleIndex) const
-{
-    return mGrammar.getRuleLevel(ruleIndex);
+    return valid;
 }
 
 size_t ParserInstance::getRuleIndex(const Rule &rule) const
@@ -215,21 +136,118 @@ size_t ParserInstance::getRuleIndex(const Rule &rule) const
     return i;
 }
 
-void ParserInstance::rewriteBodyWithHead(size_t position, size_t ruleIndex)
+Grammar::Rules ParserInstance::getRules(const Symbol &head) const
 {
-    assert(position < mParsedSentence.size());
-    assert(ruleIndex < mGrammar.getRulesCount());
-
-    mParsedSentence.erase(mParsedSentence.begin() +
-            position,
-            mParsedSentence.begin() + position +
-            mGrammar.getRule(ruleIndex).getBodyLength());
-    mParsedSentence.insert(mParsedSentence.begin() +
-            position,
-            mGrammar.getRule(ruleIndex).getHead());
+    Grammar::Rules rules;
+    Grammar::Rules::const_iterator iter = mGrammar.getRules().begin();
+    for(; iter != mGrammar.getRules().end(); ++iter)
+        if(iter->getHead() == head)
+            rules.push_back(*iter);
+    return rules;
 }
 
-void ParserInstance::processRewrite(size_t, size_t)
+size_t ParserInstance::addStates(const Grammar::Rules &rules,
+        size_t position)
+{
+    size_t newStatesCount = 0;
+    Grammar::Rules::const_iterator iter = rules.begin();
+    for(; iter != rules.end(); ++iter)
+    {
+        State state(*iter, position);
+        if(addState(state, position))
+            ++newStatesCount;
+    }
+
+    return newStatesCount;
+}
+
+bool ParserInstance::addState(const ParserInstance::State &state,
+        size_t position)
+{
+    assert(mStatesQueue.size() >= position);
+
+    if(mStatesQueue.size() == position)
+        mStatesQueue.push_back(States());
+
+    States::const_iterator iter = mStatesQueue[position].begin();
+    States::const_iterator endIter = mStatesQueue[position].end();
+    for(; iter != endIter; ++iter)
+        if(*iter == state)
+            return false;
+    mStatesQueue[position].push_back(state);
+    Log().debug("add state at %lu: %s -> %s, %lu %lu", position,
+            makeString(state.getHead()).c_str(),
+            makeString(state.getRule().getRuleBody()).insert(
+                3*state.getRulePosition(), "*").c_str(),
+            state.getOriginPosition(),
+            state.getCompletePosition());
+    return true;
+}
+
+ParserInstance::State::State(const Rule &rule, size_t originPosition)
+    :mRule(rule), mRulePosition(0), mOriginPosition(originPosition)
+    ,mCompletePosition(0)
 {
 }
+
+const Symbol &ParserInstance::State::getHead() const
+{
+    return mRule.getHead();
+}
+
+const Rule &ParserInstance::State::getRule() const
+{
+    return mRule;
+}
+
+size_t ParserInstance::State::getRulePosition() const
+{
+    return mRulePosition;
+}
+
+size_t ParserInstance::State::getOriginPosition() const
+{
+    return mOriginPosition;
+}
+
+size_t ParserInstance::State::getCompletePosition() const
+{
+    return mCompletePosition;
+}
+
+const Symbol &ParserInstance::State::getNext() const
+{
+    if(mRulePosition < mRule.getBodyLength())
+        return mRule.getBody(mRulePosition);
+    throw base::OutOfBoundError(mRulePosition, mRule.getBodyLength());
+}
+
+void ParserInstance::State::shift(size_t strPosition)
+{
+    if(mRulePosition < mRule.getBodyLength())
+    {
+        ++mRulePosition;
+        if(mRulePosition == mRule.getBodyLength())
+            mCompletePosition = strPosition;
+    }
+    else
+    {
+        throw base::OutOfBoundError(mRulePosition, mRule.getBodyLength());
+    }
+}
+
+bool ParserInstance::State::isFinished() const
+{
+    return mRulePosition == mRule.getBodyLength();
+}
+
+bool operator==(const ParserInstance::State &left,
+        const ParserInstance::State &right)
+{
+    return left.getRule() == right.getRule() &&
+        left.getRulePosition() == right.getRulePosition() &&
+        left.getOriginPosition() == right.getOriginPosition() &&
+        left.getCompletePosition() == right.getCompletePosition();
+}
+
 }

@@ -12,6 +12,7 @@ add_library(search STATIC
     "src/Parser.cpp"
     "src/ParserInstance.cpp"
     "src/TreeBuilderParserInstance.cpp"
+    "src/ParseNode.cpp"
     )
 
 target_link_libraries(search base)
