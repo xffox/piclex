@@ -125,6 +125,15 @@ void Logger::warning(const char *msg, ...)
     va_end(ap);
 }
 
+void Logger::info(const char *msg, ...)
+{
+    va_list ap;
+
+    va_start(ap, msg);
+    write(INFO, msg, ap);
+    va_end(ap);
+}
+
 void Logger::debug(const char *msg, ...)
 {
     va_list ap;
@@ -140,6 +149,8 @@ const char *Logger::getSeverityStr(Severity severity)
     {
         case DEBUG:
             return "D";
+        case INFO:
+            return "I";
         case WARNING:
             return "W";
         case ERROR:

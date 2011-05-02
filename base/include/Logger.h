@@ -32,7 +32,7 @@ class Logger
     static const size_t BUF_SIZE;
 
 public:
-    enum Severity {DEBUG, WARNING, ERROR};
+    enum Severity {DEBUG, INFO, WARNING, ERROR};
 
     ~Logger();
 
@@ -45,6 +45,7 @@ public:
 
     void error(const char *msg, ...);
     void warning(const char *msg, ...);
+    void info(const char *msg, ...);
     void debug(const char *msg, ...);
 
 private:
