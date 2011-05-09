@@ -3,8 +3,12 @@
 #include <cassert>
 #include <memory>
 
+#include <QStringList>
+
 #include "Logger.h"
 #include "Searcher.h"
+#include "ImageMapFunc.h"
+#include "GuiDefines.h"
 
 using namespace base;
 
@@ -13,9 +17,15 @@ namespace gui
 SearchModel::SearchModel(Searcher *searcher, QObject *parent)
     :QAbstractListModel(parent)
     ,mSearcher(searcher)
+    ,mImageMapper(ImageMapFunc())
+    ,mDefaultImageSize(IMAGE_PREVIEW_SIZE)
 {
     if(searcher == NULL)
         throw InvalidArgument();
+
+    mDefaultImage = QImage(QSize(mDefaultImageSize, mDefaultImageSize),
+            QImage::Format_RGB888);
+    mDefaultImage.fill(0xdddddd);
 }
 
 SearchModel::~SearchModel()
@@ -25,7 +35,7 @@ SearchModel::~SearchModel()
     deleteItems();
 }
 
-int SearchModel::rowCount(const QModelIndex &parent) const
+int SearchModel::rowCount(const QModelIndex &) const
 {
     return mResultItems.size();
 }
@@ -38,15 +48,27 @@ QVariant SearchModel::data(const QModelIndex &index, int role) const
     if(role == Qt::DisplayRole)
         return mResultItems[index.row()]->getFilename();
     if(role == Qt::DecorationRole)
-        return mResultItems[index.row()]->getPixmap();
+        return mResultItems[index.row()]->getImage();
+//    if(role == Qt::SizeHintRole)
+//        return QSize(mDefaultImageSize, mDefaultImageSize);
 
     return QVariant();
 }
 
-QVariant SearchModel::headerData(int section, Qt::Orientation orientation,
-        int role) const
+QVariant SearchModel::headerData(int, Qt::Orientation,
+        int) const
 {
     return QVariant();
+}
+
+SearchModel::ImageMapper &SearchModel::getImageMapper()
+{
+    return mImageMapper;
+}
+
+const QImage &SearchModel::getDefaultImage() const
+{
+    return mDefaultImage;
 }
 
 bool SearchModel::setDirectory(const QString &path)
@@ -79,11 +101,30 @@ bool SearchModel::setSearchStr(const QString &str)
 
 void SearchModel::onItemChanged()
 {
-    QModelIndex changedIndex = getIndex( qobject_cast<SearchItem*>(sender()) );
-    if(changedIndex.isValid())
+    SearchItem *searchItem = qobject_cast<SearchItem*>(sender());
+    if(!searchItem)
+        return;
+
+    if(!searchItem->getImage().isNull())
     {
-        emit dataChanged(changedIndex, changedIndex);
-        emit layoutChanged();
+        QModelIndex changedIndex = getIndex(searchItem);
+        if(changedIndex.isValid())
+        {
+            //        emit layoutAboutToBeChanged();
+
+            //        if(searchItem->getImage().isValid())
+            emit dataChanged(changedIndex, changedIndex);
+
+            //TODO: probably slow
+            //        emit layoutChanged();
+        }
+    }
+    else
+    {
+        Log().debug( "SearchModel: invalid image '%s'",
+                qPrintable(searchItem->getFilename()) );
+
+        removeItem(searchItem);
     }
 }
 
@@ -101,15 +142,7 @@ void SearchModel::setResults(const QStringList &results)
     QStringList::const_iterator iter = results.begin();
     for(; iter != results.end(); ++iter)
     {
-        try
-        {
-            addItem(*iter);
-        }
-        catch(InvalidPixmap &exc)
-        {
-            Log().warning( "SearchModel: add failed: invalid pixmap '%s'",
-                    qPrintable(exc.getFilename()) );
-        }
+        addItem(*iter);
     }
 
     Log().debug("SearchModel: items count= %d", mResultItems.size());
@@ -131,23 +164,37 @@ void SearchModel::clearItems()
 
 void SearchModel::addItem(const QString &filename)
 {
-    insertItem(filename);
-
-    Log().debug("SearchModel: added '%s'", qPrintable(filename));
-}
-
-void SearchModel::insertItem(const QString &filename)
-{
-    beginInsertRows(QModelIndex(), mResultItems.size(), mResultItems.size());
-
     std::auto_ptr<SearchItem> item(new SearchItem(this, filename));
 
     connect( item.get(), SIGNAL(changed()), this, SLOT(onItemChanged()) );
+
+    beginInsertRows(QModelIndex(), mResultItems.size(), mResultItems.size());
 
     mResultItems.append(item.get());
     item.release();
 
     endInsertRows();
+
+    Log().debug("SearchModel: added '%s'", qPrintable(filename));
+}
+
+void SearchModel::removeItem(SearchItem *item)
+{
+    assert(item);
+
+    QModelIndex removeIndex = getIndex(item);
+    if(removeIndex.isValid())
+    {
+        beginRemoveRows(QModelIndex(), removeIndex.row(), removeIndex.row());
+
+        mResultItems.remove(removeIndex.row());
+
+        endRemoveRows();
+
+        Log().debug( "SearchModel: removed '%s'",
+                qPrintable(item->getFilename()) );
+        delete item;
+    }
 }
 
 void SearchModel::deleteItems()

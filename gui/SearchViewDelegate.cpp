@@ -5,11 +5,13 @@
 
 namespace gui
 {
-SearchViewDelegate::SearchViewDelegate(int imageMaxSize, QObject *parent)
-    :QAbstractItemDelegate(parent), mImageMaxSize(imageMaxSize)
+SearchViewDelegate::SearchViewDelegate(int imageSize, QObject *parent)
+    :QItemDelegate(parent), mImageSize(imageSize)
+    ,mBorderSize(10)
 {
 }
 
+#if 0
 void SearchViewDelegate::paint(QPainter *painter,
         const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
@@ -18,42 +20,24 @@ void SearchViewDelegate::paint(QPainter *painter,
     QString filename = index.model()->data(index,
             Qt::DisplayRole).toString();
 
-    QImageReader imageReader(filename);
+//    if(option.state & QStyle::State_Selected)
+//        painter->fillRect(option.rect, option.palette.highlight());
 
-    QSize scaledSize = getScaledImageSize(imageReader);
-
-    QRect targetRect(QPoint(option.rect.x(), option.rect.y()),
-            scaledSize);
-
-    imageReader.setScaledSize(scaledSize);
-
-    painter->drawImage(targetRect, imageReader.read());
+    painter->fillRect(option.rect, option.palette.highlight());
+    painter->drawImage(option.rect, index.model()->data(index,
+            Qt::DisplayRole).value<QImage>());
 
     painter->restore();
 }
+#endif
 
-QSize SearchViewDelegate::sizeHint(const QStyleOptionViewItem &,
+QSize SearchViewDelegate::sizeHint(const QStyleOptionViewItem &option,
         const QModelIndex &index) const
 {
-    QString filename = index.model()->data(index,
-            Qt::DisplayRole).toString();
-
-    return getScaledImageSize(QImageReader(filename)); 
+    QString text = index.model()->data(index, Qt::DisplayRole).toString();
+    QFontMetrics fontMetrics(option.font);
+    QRect textBoundingRect = fontMetrics.boundingRect(text);
+    return QSize(qMax(mImageSize, textBoundingRect.width()) + mBorderSize,
+                mImageSize + textBoundingRect.height() + mBorderSize);
 }
-
-QSize SearchViewDelegate::getScaledImageSize(const QImageReader &imageReader) const
-{
-    QSize imageSize = imageReader.size();
-    int maxSize = qMax(imageSize.width(), imageSize.height());
-    if(maxSize > mImageMaxSize)
-    {
-        double scaleCoef = static_cast<double>(mImageMaxSize)/maxSize;
-
-        imageSize.setWidth(imageSize.width()*scaleCoef);
-        imageSize.setHeight(imageSize.height()*scaleCoef);
-    }
-
-    return imageSize;
-}
-
 }

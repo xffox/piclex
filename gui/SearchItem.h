@@ -1,9 +1,12 @@
 #ifndef SEARCH_ITEM_H
 #define SEARCH_ITEM_H
 
-#include <QPixmap>
+#include <QImage>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include "BaseExceptions.h"
+#include "MapperCallback.h"
 
 namespace gui
 {
@@ -13,30 +16,45 @@ class SearchItem: public QObject
 {
     Q_OBJECT
 
+    class ImageMapperCallback: public MapperCallback<QString, QImage>
+    {
+    public:
+        ImageMapperCallback(SearchItem *obj);
+
+        virtual ~ImageMapperCallback();
+
+        virtual void call(const QString &in, const QImage &out);
+
+    private:
+        SearchItem *mObj;
+    };
+
 public:
     SearchItem(SearchModel *searchModel, const QString &filename);
+    ~SearchItem();
 
     const QString &getFilename() const;
-    const QPixmap &getPixmap() const;
+    const QImage getImage() const;
+
+    void set(const QString &filename, const QImage &image);
 
 signals:
     void changed();
-
-public slots:
-    void onImageReadFinished(QString filename, QImage image);
-
-private:
-    void readPixmap();
-
-    void startImageRead();
 
 private:
     SearchModel *mSearchModel;
 
     QString mFilename;
-    QPixmap mPixmap;
+//    QImage mImage;
 
-    int mDefaultSize;
+//    int mDefaultImageSize;
+//    QImage mDefaultImage;
+
+//    bool mLoaded;
+
+    mutable QMutex mMutex;
+
+    mutable ImageMapperCallback mImageMapperCallback;
 };
 }
 

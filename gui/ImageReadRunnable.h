@@ -32,7 +32,7 @@ private:
     QString mFilename;
     QImage mImage;
 
-    int mImageMaxSize;
+    const int mImageMaxSize;
 };
 }
 

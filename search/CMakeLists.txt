@@ -13,6 +13,9 @@ add_library(search STATIC
     "src/ParserInstance.cpp"
     "src/TreeBuilderParserInstance.cpp"
     "src/ParseNode.cpp"
+    "src/IdStorage.cpp"
+    "src/IndexToken.cpp"
+    "src/InvertedIndex.cpp"
     )
 
 target_link_libraries(search base)

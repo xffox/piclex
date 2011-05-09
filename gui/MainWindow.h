@@ -25,6 +25,8 @@ public slots:
 
     void search();
 
+    void openItem(const QModelIndex &index);
+
 private:
     void connectToSignals();
 

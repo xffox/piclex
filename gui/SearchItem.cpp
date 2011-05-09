@@ -1,19 +1,24 @@
 #include "SearchItem.h"
 
-#include <memory>
-
 #include <QThreadPool>
 
 #include "SearchModel.h"
-#include "ImageReadRunnable.h"
 
 namespace gui
 {
 SearchItem::SearchItem(SearchModel *searchModel, const QString &filename)
     :QObject(searchModel), mSearchModel(searchModel), mFilename(filename)
-    ,mDefaultSize(100)
+//    ,mDefaultImageSize(300)
+//    ,mLoaded(false)
+    ,mMutex(QMutex::Recursive)
+    ,mImageMapperCallback(this)
 {
-    readPixmap();
+}
+
+SearchItem::~SearchItem()
+{
+    if(mSearchModel)
+        mSearchModel->getImageMapper().cancel(mFilename, &mImageMapperCallback);
 }
 
 const QString &SearchItem::getFilename() const
@@ -21,36 +26,54 @@ const QString &SearchItem::getFilename() const
     return mFilename;
 }
 
-const QPixmap &SearchItem::getPixmap() const
+const QImage SearchItem::getImage() const
 {
-    return mPixmap;
+//    QMutexLocker locker(&mMutex);
+
+//    if(mLoaded)
+//        return mImage;
+
+    QImage image;
+    if(mSearchModel)
+    {
+        if(mSearchModel->getImageMapper().mapStored(image, mFilename))
+            return image; 
+
+        mSearchModel->getImageMapper().map(mFilename, &mImageMapperCallback);
+
+        return mSearchModel->getDefaultImage();
+    }
+
+//    if(mLoaded)
+//        return mImage;
+
+    return QImage();
 }
 
-void SearchItem::onImageReadFinished(QString, QImage image)
+void SearchItem::set(const QString&, const QImage&)
 {
-    mPixmap.convertFromImage(image);
+//    QMutexLocker locker(&mMutex);
+//
+//    mImage = image;
+//    mLoaded = true;
 
     emit changed();
 }
 
-void SearchItem::readPixmap()
+SearchItem::ImageMapperCallback::ImageMapperCallback(SearchItem *obj)
+    :mObj(obj)
 {
-    mPixmap = QPixmap(QSize(mDefaultSize, mDefaultSize));
-    mPixmap.fill(Qt::gray);
-
-    startImageRead();
 }
 
-void SearchItem::startImageRead()
+SearchItem::ImageMapperCallback::~ImageMapperCallback()
 {
-    std::auto_ptr<ImageReadRunnable> readRunnable(
-            new ImageReadRunnable(mFilename));
+}
 
-    connect( readRunnable.get(), SIGNAL(readFinished(QString, QImage)),
-            this, SLOT(onImageReadFinished(QString, QImage)) );
-
-    QThreadPool::globalInstance()->start(readRunnable.get());
-    readRunnable.release();
+void SearchItem::ImageMapperCallback::call(const QString &in,
+        const QImage &out)
+{
+    if(mObj)
+        mObj->set(in, out);
 }
 
 }

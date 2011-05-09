@@ -6,32 +6,20 @@
 
 #include "BaseExceptions.h"
 #include "SearchItem.h"
+#include "Mapper.h"
+
+class QImage;
 
 namespace gui
 {
 class Searcher;
 
-class InvalidPixmap: public base::BaseException
-{
-public:
-    InvalidPixmap(const QString &filename)
-        :mFilename(filename)
-    {
-    }
-
-    const QString &getFilename() const
-    {
-        return mFilename;
-    }
-
-private:
-    QString mFilename;
-};
-
 class SearchModel: public QAbstractListModel
 {
     Q_OBJECT
         
+    typedef Mapper<QString, QImage> ImageMapper;
+
 public:
     SearchModel(Searcher *searcher, QObject *parent = 0);
     ~SearchModel();
@@ -40,6 +28,10 @@ public:
     QVariant data(const QModelIndex &index, int role) const;
     QVariant headerData(int section, Qt::Orientation orientation,
             int role = Qt::DisplayRole) const;
+
+    ImageMapper &getImageMapper();
+
+    const QImage &getDefaultImage() const;
 
 public slots:
     bool setDirectory(const QString &path);
@@ -53,9 +45,9 @@ private:
     void setResults(const QStringList &results);
     
     void addItem(const QString &filename);
+    void removeItem(SearchItem *item);
 
     void clearItems();
-    void insertItem(const QString &filename);
 
     void deleteItems();
 
@@ -67,6 +59,11 @@ private:
     QVector<SearchItem*> mResultItems;
 
     QString mSearchStr;
+
+    ImageMapper mImageMapper;
+
+    QImage mDefaultImage;
+    int mDefaultImageSize;
 };
 
 }

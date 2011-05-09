@@ -9,9 +9,12 @@ if(CPPUNIT_FOUND)
         SymbolTest.cpp
         ParserTest.cpp
         TreeTest.cpp
+        IdStorageTest.cpp
+        InvertedIndexTest.cpp
         )
     target_link_libraries(search_test ${CPPUNIT_LIBRARIES} search)
 
     add_test(SearchTest "${EXECUTABLE_OUTPUT_PATH}/search_test")
-#TODO: message
+else(CPPUNIT_FOUND)
+    message(WARNING "cppunit not found - testing is not available")
 endif(CPPUNIT_FOUND)
