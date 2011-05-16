@@ -15,12 +15,13 @@ if(QT4_FOUND)
         MainWindow.cpp
         SearchModel.cpp
         SearchItem.cpp
-        SimpleSearcher.cpp
-        SearcherFactory.cpp
+        SearchEngineFactory.cpp
 #        ImageReadRunnable.cpp
         ImageMapFunc.cpp
         GuiDefines.cpp
         SearchViewDelegate.cpp
+        SimpleSearchEngine.cpp
+        MockSearchEngine.cpp
         )
 
     set(PICLEX_MOC_HDRS

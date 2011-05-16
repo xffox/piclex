@@ -1,4 +1,4 @@
-#include "SimpleSearcher.h"
+#include "SimpleSearchEngine.h"
 
 #include <QDir>
 
@@ -8,22 +8,22 @@ using namespace base;
 
 namespace gui
 {
-SimpleSearcher::~SimpleSearcher()
+SimpleSearchEngine::~SimpleSearchEngine()
 {
 }
 
-bool SimpleSearcher::setDirectory(const QString &path)
+bool SimpleSearchEngine::setDirectory(const QString &path)
 {
     QDir dir(path);
     if(!dir.exists())
     {
-        Log().warning("SimpleSearcher: set directory failed: directory doesn't"
+        Log().warning("SimpleSearchEngine: set directory failed: directory doesn't"
                 "exist '%s'",
                 qPrintable(path));
         return false;
     }
 
-    Log().debug("SimpleSearcher: set directory '%s'", qPrintable(path));
+    Log().debug("SimpleSearchEngine: set directory '%s'", qPrintable(path));
 
     QFileInfoList fileInfoList = dir.entryInfoList(
             QDir::Files);
@@ -39,23 +39,23 @@ bool SimpleSearcher::setDirectory(const QString &path)
     return true;
 }
 
-bool SimpleSearcher::setSearchStr(const QString &str)
+bool SimpleSearchEngine::setSearchStr(const QString &str)
 {
     mSearchStr = str;
 
-    Log().debug("SimpleSearcher: set search str '%s'", qPrintable(str));
+    Log().debug("SimpleSearchEngine: set search str '%s'", qPrintable(str));
 
     updateResults();
 
     return true;
 }
 
-const QStringList &SimpleSearcher::getResults() const
+const QStringList &SimpleSearchEngine::getResults() const
 {
     return mResults;
 }
 
-void SimpleSearcher::updateResults()
+void SimpleSearchEngine::updateResults()
 {
     mResults.clear();
 
@@ -65,7 +65,7 @@ void SimpleSearcher::updateResults()
             mResults.append(*iter);
 }
 
-bool SimpleSearcher::isSearched(const QString &filename) const
+bool SimpleSearchEngine::isSearched(const QString &filename) const
 {
     return mSearchStr.isEmpty() || filename.contains(mSearchStr);
 }

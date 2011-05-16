@@ -24,15 +24,15 @@ class IdStorageTest: public CppUnit::TestFixture
 public:
     void testGetId()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
-        const Term value1("foo");
-        Id id1 = idStorage.getId(value1);
+        const IdStorage<std::string>::Value value1("foo");
+        StorageId id1 = idStorage.getId(value1);
 
         CPPUNIT_ASSERT(idStorage.getId(value1) == id1);
 
-        const Term value2("bar");
-        Id id2 = idStorage.getId(value2);
+        const IdStorage<std::string>::Value value2("bar");
+        StorageId id2 = idStorage.getId(value2);
 
         CPPUNIT_ASSERT(idStorage.getId(value1) == id1);
         CPPUNIT_ASSERT(idStorage.getId(value2) == id2);
@@ -40,15 +40,15 @@ public:
 
     void testGetExistingId()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
-        const Term value1("foo");
-        Id id1 = idStorage.getId(value1);
+        const IdStorage<std::string>::Value value1("foo");
+        StorageId id1 = idStorage.getId(value1);
 
         CPPUNIT_ASSERT(idStorage.getExistingId(value1) == id1);
 
-        const Term value2("bar");
-        Id id2 = idStorage.getId(value2);
+        const IdStorage<std::string>::Value value2("bar");
+        StorageId id2 = idStorage.getId(value2);
 
         CPPUNIT_ASSERT(idStorage.getExistingId(value1) == id1);
         CPPUNIT_ASSERT(idStorage.getExistingId(value2) == id2);
@@ -56,15 +56,15 @@ public:
 
     void testGetValue()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
-        const Term value1("foo");
-        Id id1 = idStorage.getId(value1);
+        const IdStorage<std::string>::Value value1("foo");
+        StorageId id1 = idStorage.getId(value1);
 
         CPPUNIT_ASSERT(idStorage.getValue(id1) == value1);
 
-        const Term value2("bar");
-        Id id2 = idStorage.getId(value2);
+        const IdStorage<std::string>::Value value2("bar");
+        StorageId id2 = idStorage.getId(value2);
 
         CPPUNIT_ASSERT(idStorage.getValue(id1) == value1);
         CPPUNIT_ASSERT(idStorage.getValue(id2) == value2);
@@ -72,15 +72,15 @@ public:
 
     void testRemoveId()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
-        const Term value1("foo");
-        Id id1 = idStorage.getId(value1);
+        const IdStorage<std::string>::Value value1("foo");
+        StorageId id1 = idStorage.getId(value1);
 
         CPPUNIT_ASSERT(idStorage.getValue(id1) == value1);
 
-        const Term value2("bar");
-        Id id2 = idStorage.getId(value2);
+        const IdStorage<std::string>::Value value2("bar");
+        StorageId id2 = idStorage.getId(value2);
 
         CPPUNIT_ASSERT(idStorage.getValue(id1) == value1);
         CPPUNIT_ASSERT(idStorage.getValue(id2) == value2);
@@ -115,15 +115,15 @@ public:
 
     void testRemoveValue()
     { 
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
-        const Term value1("foo");
-        Id id1 = idStorage.getId(value1);
+        const IdStorage<std::string>::Value value1("foo");
+        StorageId id1 = idStorage.getId(value1);
 
         CPPUNIT_ASSERT(idStorage.getValue(id1) == value1);
 
-        const Term value2("bar");
-        Id id2 = idStorage.getId(value2);
+        const IdStorage<std::string>::Value value2("bar");
+        StorageId id2 = idStorage.getId(value2);
 
         CPPUNIT_ASSERT(idStorage.getValue(id1) == value1);
         CPPUNIT_ASSERT(idStorage.getValue(id2) == value2);
@@ -158,35 +158,35 @@ public:
 
     void testValueNotFoundError()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
         idStorage.getExistingId("foobar");
     }
 
     void testIdNotFoundError()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
-        Term value = idStorage.getValue(0);
+        IdStorage<std::string>::Value value = idStorage.getValue(0);
     }
 
     void testOperatorIdNotFoundError()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
-        Term value = idStorage[0];
+        IdStorage<std::string>::Value value = idStorage[0];
     }
 
     void testRemoveIdNotFoundError()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
         idStorage.removeId(0);
     }
 
     void testRemoveValueNotFoundError()
     {
-        IdStorage idStorage;
+        IdStorage<std::string> idStorage;
 
         idStorage.removeValue("foobar");
     }

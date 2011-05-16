@@ -13,9 +13,20 @@ add_library(search STATIC
     "src/ParserInstance.cpp"
     "src/TreeBuilderParserInstance.cpp"
     "src/ParseNode.cpp"
-    "src/IdStorage.cpp"
     "src/IndexToken.cpp"
     "src/InvertedIndex.cpp"
+    "src/IndexMaker.cpp"
+    "src/IndexSearcher.cpp"
+    "src/FsDocProvider.cpp"
+    "src/DocIdReader.cpp"
+    "src/Searcher.cpp"
+    "src/IndexMakerFactory.cpp"
+    "src/IndexSearcherFactory.cpp"
+
+    "src/mock/WordDocProcessor.cpp"
+    "src/mock/SimpleIndexMaker.cpp"
+    "src/mock/SimpleIndexSearcher.cpp"
+    "src/mock/SimpleDocProvider.cpp"
     )
 
 target_link_libraries(search base)

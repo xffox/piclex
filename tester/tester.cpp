@@ -1,12 +1,17 @@
 #include <iostream>
 
 #include <list>
+#include <set>
 
 #include "Logger.h"
 #include "Parser.h"
 #include "TreeBuilderParserInstance.h"
 
 #include "Tree.h"
+#include "FsUtil.h"
+#include "FsDocProvider.h"
+
+#include "mock/WordDocProcessor.h"
 
 using namespace base;
 using namespace search;
@@ -254,6 +259,32 @@ void testTreeBuilderParserInstance()
 }
 }
 
+class ExtensionFilter: public FsFilter
+{
+public:
+    ExtensionFilter(const std::string &extension)
+        :mDotExtension(extension)
+    {
+        if(extension.length() == 0)
+            throw InvalidArgument();
+
+        mDotExtension.insert(0, ".");
+    }
+
+    bool isValid(const std::string &str)
+    {
+        // dot at the beginning of the word is not the extension delimeter dot
+        if(str.length() <= mDotExtension.length())
+            return false;
+
+        return !str.compare(str.length() - mDotExtension.length(),
+                mDotExtension.length(), mDotExtension);
+    }
+
+private:
+    std::string mDotExtension;
+};
+
 int main()
 {
     Log().setLogWriter( new TimestampedLogWriter(new FileLogWriter(
@@ -265,7 +296,44 @@ int main()
     testTree();
 #endif
 
+#if 0
     testTreeBuilderParserInstance();
+#endif
+
+    ExtensionFilter filter("txt");
+
+    std::vector<std::string> files;
+    FsUtil::listFiles(files, "/home/fox");
+
+    FsDocProvider docProvider;
+
+    std::vector<std::string>::const_iterator iter;
+    for(iter = files.begin(); iter != files.end(); ++iter)
+        std::cout<<*iter<<'\n';
+
+    if(files.size() > 0)
+    {
+#if 0
+        std::string data;
+        docProvider.read(data, files[0]);
+        std::cout<<"data [\n";
+        std::cout<<data;
+        std::cout<<"]\n";
+        
+        WordDocProcessor processor;
+        processor.setDocument(data);
+
+        std::set<Term> terms;
+        processor.getTerms(terms);
+#endif
+
+#if 0
+        std::cout<<"Words:\n";
+        std::set<Term>::const_iterator termsIter = terms.begin();
+        for(; termsIter != terms.end(); ++termsIter)
+            std::cout<<*termsIter<<'\n';
+#endif
+    }
 
     return 0;
 }

@@ -5,7 +5,7 @@
 #include <QUrl>
 
 #include "Logger.h"
-#include "SearcherFactory.h"
+#include "SearchEngineFactory.h"
 #include "SearchViewDelegate.h"
 #include "GuiDefines.h"
 
@@ -14,7 +14,7 @@ using namespace base;
 namespace gui
 {
 MainWindow::MainWindow()
-    :mModel(createSearcher())
+    :mModel(createSearchEngine())
 {
     mUi.setupUi(this);
 

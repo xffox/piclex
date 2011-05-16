@@ -33,7 +33,7 @@ public:
 private:
     Index mIndex;
 
-    const Postings mEmptyPostings;
+    static const Postings emptyPostings;
 };
 
 Postings operator&(const Postings &left, const Postings &right);

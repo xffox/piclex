@@ -4,11 +4,14 @@
 #include <cstddef>
 #include <string>
 
+#include "IdStorage.h"
+
 namespace search
 {
-typedef size_t Id;
-typedef Id DocId;
+typedef StorageId DocId;
+typedef IdStorage<std::string> DocIdStorage;
 typedef std::string Term;
+typedef std::string Document;
 }
 
 #endif//SEARCH_DEFINES_H

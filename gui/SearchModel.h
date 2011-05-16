@@ -12,7 +12,7 @@ class QImage;
 
 namespace gui
 {
-class Searcher;
+class SearchEngine;
 
 class SearchModel: public QAbstractListModel
 {
@@ -21,7 +21,7 @@ class SearchModel: public QAbstractListModel
     typedef Mapper<QString, QImage> ImageMapper;
 
 public:
-    SearchModel(Searcher *searcher, QObject *parent = 0);
+    SearchModel(SearchEngine *searchEngine, QObject *parent = 0);
     ~SearchModel();
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
@@ -54,7 +54,7 @@ private:
     QModelIndex getIndex(SearchItem *item) const;
 
 private:
-    Searcher *mSearcher;
+    SearchEngine *mSearchEngine;
 
     QVector<SearchItem*> mResultItems;
 

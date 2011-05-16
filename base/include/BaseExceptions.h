@@ -1,6 +1,8 @@
 #ifndef BASE_EXCEPTIONS_H
 #define BASE_EXCEPTIONS_H
 
+#include <cstddef>
+
 namespace base
 {
 class BaseException

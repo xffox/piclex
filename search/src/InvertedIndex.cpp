@@ -108,7 +108,7 @@ const Postings &InvertedIndex::getPostings(const Term &term) const
     Index::const_iterator termIter = mIndex.find(term);
     if(termIter != mIndex.end())
         return (*termIter).second;
-    return mEmptyPostings;
+    return emptyPostings;
 }
 
 size_t InvertedIndex::getFrequency(const Term &term) const
@@ -169,5 +169,7 @@ bool isContain(const Postings &postings, DocId id)
             return true;
     return false;
 }
+
+const Postings InvertedIndex::emptyPostings;
 
 }

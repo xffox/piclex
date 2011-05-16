@@ -1,16 +1,16 @@
-#ifndef SIMPLE_SEARCHER_H
-#define SIMPLE_SEARCHER_H
+#ifndef SIMPLE_SEARCH_ENGINE_H
+#define SIMPLE_SEARCH_ENGINE_H
 
 #include <QStringList>
 
-#include "Searcher.h"
+#include "SearchEngine.h"
 
 namespace gui
 {
-class SimpleSearcher: public Searcher
+class SimpleSearchEngine: public SearchEngine
 {
 public:
-    virtual ~SimpleSearcher();
+    virtual ~SimpleSearchEngine();
 
     virtual bool setDirectory(const QString &path);
     virtual bool setSearchStr(const QString &str);
@@ -30,4 +30,4 @@ private:
 };
 }
 
-#endif//SIMPLE_SEARCHER_H
+#endif//SIMPLE_SEARCH_ENGINE_H

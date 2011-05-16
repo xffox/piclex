@@ -6,7 +6,7 @@
 #include <QStringList>
 
 #include "Logger.h"
-#include "Searcher.h"
+#include "SearchEngine.h"
 #include "ImageMapFunc.h"
 #include "GuiDefines.h"
 
@@ -14,23 +14,23 @@ using namespace base;
 
 namespace gui
 {
-SearchModel::SearchModel(Searcher *searcher, QObject *parent)
+SearchModel::SearchModel(SearchEngine *searchEngine, QObject *parent)
     :QAbstractListModel(parent)
-    ,mSearcher(searcher)
+    ,mSearchEngine(searchEngine)
     ,mImageMapper(ImageMapFunc())
     ,mDefaultImageSize(IMAGE_PREVIEW_SIZE)
 {
-    if(searcher == NULL)
+    if(searchEngine == NULL)
         throw InvalidArgument();
 
     mDefaultImage = QImage(QSize(mDefaultImageSize, mDefaultImageSize),
             QImage::Format_RGB888);
-    mDefaultImage.fill(0xdddddd);
+    mDefaultImage.fill(IMAGE_DEFAULT_COLOR);
 }
 
 SearchModel::~SearchModel()
 {
-    delete mSearcher;
+    delete mSearchEngine;
 
     deleteItems();
 }
@@ -73,8 +73,8 @@ const QImage &SearchModel::getDefaultImage() const
 
 bool SearchModel::setDirectory(const QString &path)
 {
-    assert(mSearcher);
-    if(mSearcher->setDirectory(path))
+    assert(mSearchEngine);
+    if(mSearchEngine->setDirectory(path))
     {
         updateResults();
         return true;
@@ -88,8 +88,8 @@ bool SearchModel::setSearchStr(const QString &str)
     {
         mSearchStr = str;
 
-        assert(mSearcher);
-        if(mSearcher->setSearchStr(str))
+        assert(mSearchEngine);
+        if(mSearchEngine->setSearchStr(str))
         {
             updateResults();
             return true;
@@ -130,7 +130,7 @@ void SearchModel::onItemChanged()
 
 void SearchModel::updateResults()
 {
-    setResults(mSearcher->getResults());
+    setResults(mSearchEngine->getResults());
 }
 
 void SearchModel::setResults(const QStringList &results)

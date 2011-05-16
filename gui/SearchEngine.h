@@ -1,15 +1,15 @@
-#ifndef SEARCHER_H
-#define SEARCHER_H
+#ifndef SEARCH_ENGINE_H
+#define SEARCH_ENGINE_H
 
 class QString;
 class QStringList;
 
 namespace gui
 {
-class Searcher
+class SearchEngine
 {
 public:
-    virtual ~Searcher() {}
+    virtual ~SearchEngine() {}
 
     virtual bool setDirectory(const QString &path) = 0;
     virtual bool setSearchStr(const QString &str) = 0;
@@ -19,4 +19,4 @@ public:
 
 }
 
-#endif//SEARCHER_H
+#endif//SEARCH_ENGINE_H
