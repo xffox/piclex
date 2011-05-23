@@ -11,6 +11,8 @@ if(CPPUNIT_FOUND)
         TreeTest.cpp
         IdStorageTest.cpp
         InvertedIndexTest.cpp
+        Matrix3dTest.cpp
+        DocDescriptionTest.cpp
         )
     target_link_libraries(search_test ${CPPUNIT_LIBRARIES} search)
 

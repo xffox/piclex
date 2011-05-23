@@ -40,8 +40,7 @@ public:
 
     void erase(TreeIterator<T> &iter);
 
-    //TODO:
-//    void clear();
+    void clear();
 
 private:
 
@@ -227,6 +226,17 @@ void Tree<T>::erase(TreeIterator<T> &iter)
 
     delete node;
 }
+
+template<class T>
+void Tree<T>::clear()
+{
+    if(mRoot)
+    {
+        mRoot->deleteSubtree();
+        mRoot = NULL;
+    }
+}
+
 }
 
 #endif//TREE_H

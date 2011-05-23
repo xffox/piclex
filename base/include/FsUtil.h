@@ -42,6 +42,8 @@ public:
 
     static void listDirs(std::vector<std::string> &names,
             const std::string &path, FsFilter *filter = NULL);
+
+    static void read(std::string &data, const std::string &name);
 };
 
 }

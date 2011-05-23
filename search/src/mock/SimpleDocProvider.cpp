@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "Logger.h"
 #include "FsUtil.h"
 
 namespace
@@ -58,13 +59,41 @@ void SimpleDocProvider::listNames(std::vector<std::string> &names,
 
 void SimpleDocProvider::read(Document &document, const std::string &name) const
 {
-    document = name;
+    const std::string ext = "descr";
 
-    size_t pos = 0;
-    while((pos = document.find('/', pos)) != std::string::npos)
+    document.clear();
+
+    size_t dotPos = name.find_last_of('.');
+    if(dotPos != std::string::npos && dotPos != name.size()-1)
     {
-        document[pos] = ' ';
-        ++pos;
+        std::string descriptionName = name;
+        descriptionName.replace(dotPos + 1, name.size() - (dotPos+1),
+                ext);
+
+        base::Log().debug("read image description from '%s'",
+                descriptionName.c_str());
+
+        try
+        {
+            base::FsUtil::read(document, descriptionName);
+        }
+        catch(base::FsUtilError &exc)
+        {
+            base::Log().warning("description read failed from '%s'",
+                    descriptionName.c_str());
+            return;
+        }
+
+        if(document.size() > 0)
+        {
+            if(document[document.size()-1] == '\n')
+                document.erase(document.size()-1);
+        }
+    }
+    else
+    {
+        base::Log().warning("invalid document name '%s'",
+                name.c_str());
     }
 }
 

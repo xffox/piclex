@@ -4,6 +4,11 @@
 
 namespace search
 {
+Rule::Rule()
+{
+}
+
+
 Rule::Rule(const Symbol &head, const Sentence &body)
     :mHead(head), mBody(body)
 {

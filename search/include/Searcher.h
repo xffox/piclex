@@ -11,6 +11,7 @@ class DocIdReader;
 class IndexMaker;
 class IndexSearcher;
 
+//! The main search class
 class Searcher
 {
 public:

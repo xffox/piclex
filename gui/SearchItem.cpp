@@ -1,6 +1,7 @@
 #include "SearchItem.h"
 
 #include <QThreadPool>
+#include <QImageReader>
 
 #include "SearchModel.h"
 
@@ -13,6 +14,9 @@ SearchItem::SearchItem(SearchModel *searchModel, const QString &filename)
     ,mMutex(QMutex::Recursive)
     ,mImageMapperCallback(this)
 {
+    QImageReader reader(filename);
+    if(!reader.canRead())
+        throw InvalidImageFile();
 }
 
 SearchItem::~SearchItem()

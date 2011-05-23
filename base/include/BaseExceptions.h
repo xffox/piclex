@@ -40,6 +40,14 @@ class InvalidArgument: public BaseException
 {
 };
 
+//! Some programming error
+/*!
+ * InfernalError)
+ */
+class InternalError: public BaseException
+{
+};
+
 }
 
 #endif//BASE_EXCEPTIONS_H

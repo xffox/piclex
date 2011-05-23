@@ -148,7 +148,7 @@ Postings operator&(const Postings &left, const Postings &right)
             ++leftPostingsIter;
             ++rightPostingsIter;
         }
-        if(*leftPostingsIter < *rightPostingsIter)
+        else if(*leftPostingsIter < *rightPostingsIter)
         {
             ++leftPostingsIter;
         }

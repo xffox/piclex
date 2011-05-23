@@ -11,6 +11,7 @@ typedef unsigned int SymbolValue;
 class Symbol
 {
 public:
+    Symbol();
     Symbol(SymbolType type, SymbolValue value);
     Symbol(char c);
 

@@ -9,6 +9,7 @@ namespace search
 class Rule
 {
 public:
+    Rule();
     Rule(const Symbol &head, const Sentence &body);
 
     bool operator==(const Rule &that) const;

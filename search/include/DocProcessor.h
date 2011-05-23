@@ -3,6 +3,7 @@
 
 #include <set>
 
+#include "Clonable.h"
 #include "BaseExceptions.h"
 #include "SearchDefines.h"
 
@@ -16,7 +17,7 @@ class DocProcessError: public base::BaseException
 {
 };
 
-class DocProcessor
+class DocProcessor: public base::Clonable<DocProcessor>
 {
 public:
     virtual ~DocProcessor(){};

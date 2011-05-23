@@ -4,6 +4,11 @@
 
 namespace search
 {
+Symbol::Symbol()
+    :mType(NONTERMINAL), mValue(0)
+{
+}
+
 Symbol::Symbol(SymbolType type, SymbolValue value)
     :mType(type), mValue(value)
 {

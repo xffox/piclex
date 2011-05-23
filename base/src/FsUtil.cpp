@@ -4,6 +4,7 @@
 #include <dirent.h>
 #include <unistd.h>
 #include <errno.h>
+#include <fstream>
 
 namespace
 {
@@ -73,6 +74,7 @@ void listType(std::vector<std::string> &names,
     delete[] buf;
     closedir(dir);
 }
+
 }
 
 namespace base
@@ -93,6 +95,24 @@ void FsUtil::listDirs(std::vector<std::string> &names,
         const std::string &path, FsFilter *filter)
 {
     listType(names, path, S_IFDIR, filter);
+}
+
+void FsUtil::read(std::string &data, const std::string &name)
+{
+    std::ifstream infile(name.c_str());
+    if(!infile.is_open())
+        throw base::FsUtilError();
+
+    const size_t bufSize = 4096;
+    char buf[bufSize];
+
+    do
+    {
+        infile.read(buf, bufSize);
+        if(infile.bad())
+            throw base::FsUtilError();
+        data.append(buf, infile.gcount());
+    }while(!infile.eof());
 }
 
 PathError::PathError(const std::string &path)

@@ -6,6 +6,7 @@ class QStringList;
 
 namespace gui
 {
+//! An interface for the search engine objects
 class SearchEngine
 {
 public:

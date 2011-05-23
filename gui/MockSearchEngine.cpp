@@ -6,7 +6,8 @@
 
 #include "Searcher.h"
 #include "mock/SimpleDocProvider.h"
-#include "mock/WordDocProcessor.h"
+//#include "mock/WordDocProcessor.h"
+#include "ImageDocProcessor.h"
 
 using namespace search;
 
@@ -17,8 +18,8 @@ MockSearchEngine::MockSearchEngine()
 {
     DocProvider *docProvider = new SimpleDocProvider();
 
-    DocProcessor *docProcessor = new WordDocProcessor();
-    DocProcessor *queryProcessor = new WordDocProcessor();
+    DocProcessor *docProcessor = new ImageDocProcessor();
+    DocProcessor *queryProcessor = new ImageDocProcessor();
 
     mSearcher = new Searcher(docProvider, docProcessor, queryProcessor);
 }

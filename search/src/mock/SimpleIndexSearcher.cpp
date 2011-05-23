@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Logger.h"
 #include "DocProcessor.h"
 
 namespace search
@@ -44,6 +45,8 @@ void SimpleIndexSearcher::search(std::vector<DocId> &docIds,
 
     for(; termsIter != terms.end(); ++termsIter)
         docIds = docIds & getIndex().getPostings(*termsIter);
+
+    base::Log().debug("find %lu documents for %lu terms", docIds.size(), terms.size());
 }
 
 void SimpleIndexSearcher::filter(std::vector<DocId> &docIds,

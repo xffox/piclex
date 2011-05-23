@@ -10,18 +10,18 @@ class ParseNode
 {
 public:
     ParseNode(const Symbol &symbol, size_t beginPosition,
-            size_t endPosition);
+            size_t size);
 
     const Symbol &getSymbol() const;
 
     size_t getBeginPosition() const;
-    size_t getEndPosition() const;
+    size_t getSize() const;
 
 private:
     Symbol mSymbol;
 
     size_t mBeginPosition;
-    size_t mEndPosition;
+    size_t mSize;
 };
 
 }

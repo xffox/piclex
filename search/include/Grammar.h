@@ -15,6 +15,7 @@ public:
     typedef std::vector<Symbol> Symbols;
     typedef std::vector<Rule> Rules;
 
+    Grammar();
     Grammar(const Symbols &symbols, const Rules &rules, const Symbol &startSymbol);
 
     const Rule &getRule(size_t ruleIndex) const;

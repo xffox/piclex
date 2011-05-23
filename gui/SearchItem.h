@@ -12,6 +12,10 @@ namespace gui
 {
 class SearchModel;
 
+class InvalidImageFile: public base::BaseException
+{
+};
+
 class SearchItem: public QObject
 {
     Q_OBJECT

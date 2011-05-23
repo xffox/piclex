@@ -1,25 +1,27 @@
-#ifndef TREE_BUILDER_PARSER_INSTANCE_H
-#define TREE_BUILDER_PARSER_INSTANCE_H
+#ifndef TREE_BUILDER_PARSER_H
+#define TREE_BUILDER_PARSER_H
 
-#include "ParserInstance.h"
+#include "Parser.h"
 #include "Tree.h"
 #include "ParseNode.h"
 
 namespace search
 {
 
-class TreeBuilderParserInstance: public ParserInstance
+class TreeBuilderParser: public Parser
 {
     typedef Tree<ParseNode> ParseTree;
 public:
-    TreeBuilderParserInstance(const Grammar &grammar, const std::string &str);
-    virtual ~TreeBuilderParserInstance();
+    TreeBuilderParser();
+    TreeBuilderParser(const Grammar &grammar);
+    virtual ~TreeBuilderParser();
 
     //TODO: make const
     ParseTree &getParseTree();
 
 private:
     virtual void rewrite();
+    virtual void resetRewrite();
 
     void rewrite(ParseTree::Iterator treeIter);
 
@@ -31,4 +33,4 @@ private:
 
 }
 
-#endif//TREE_BUILDER_PARSER_INSTANCE_H
+#endif//TREE_BUILDER_PARSER_H

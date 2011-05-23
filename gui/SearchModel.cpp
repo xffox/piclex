@@ -164,7 +164,17 @@ void SearchModel::clearItems()
 
 void SearchModel::addItem(const QString &filename)
 {
-    std::auto_ptr<SearchItem> item(new SearchItem(this, filename));
+    std::auto_ptr<SearchItem> item;
+    try
+    {
+        item = std::auto_ptr<SearchItem>(new SearchItem(this, filename));
+    }
+    catch(InvalidImageFile &exc)
+    {
+        Log().warning("model: invalid image file '%s'",
+                qPrintable(filename));
+        return;
+    }
 
     connect( item.get(), SIGNAL(changed()), this, SLOT(onItemChanged()) );
 

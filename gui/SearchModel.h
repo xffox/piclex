@@ -14,6 +14,7 @@ namespace gui
 {
 class SearchEngine;
 
+//! Qt based model for search results.
 class SearchModel: public QAbstractListModel
 {
     Q_OBJECT

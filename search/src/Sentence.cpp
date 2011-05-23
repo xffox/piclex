@@ -22,21 +22,19 @@ std::string makeString(const Sentence &sentence)
 }
 
 std::string makeString(const Sentence &sentence,
-        size_t begin, size_t end)
+        size_t begin, size_t size)
 {
-    if(begin > end)
-        throw base::InvalidArgument();
     if(begin > sentence.size())
         throw base::OutOfBoundError(begin, sentence.size());
-    if(end > sentence.size())
-        throw base::OutOfBoundError(end, sentence.size());
+    if(begin + size > sentence.size())
+        throw base::OutOfBoundError(begin + size, sentence.size());
 
     //TODO: optimize
 
     std::stringstream result;
-    for(size_t i = begin; i < end; ++i)
+    for(size_t i = 0; i < size; ++i)
     {
-        result<<makeString(sentence[i]);
+        result<<makeString(sentence[begin+i]);
     }
     return result.str();
 }

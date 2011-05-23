@@ -1,29 +1,33 @@
-#include "TreeBuilderParserInstance.h"
+#include "TreeBuilderParser.h"
 
 #include "Tree.h"
 
 namespace search
 {
-
-TreeBuilderParserInstance::TreeBuilderParserInstance(const Grammar &grammar,
-        const std::string &str)
-    :ParserInstance(grammar, str)
+TreeBuilderParser::TreeBuilderParser()
 {
 }
 
-TreeBuilderParserInstance::~TreeBuilderParserInstance()
+TreeBuilderParser::TreeBuilderParser(const Grammar &grammar)
+    :Parser(grammar)
+{
+}
+
+TreeBuilderParser::~TreeBuilderParser()
 {
 
 }
 
-TreeBuilderParserInstance::ParseTree &TreeBuilderParserInstance::
+TreeBuilderParser::ParseTree &TreeBuilderParser::
         getParseTree()
 {
     return mParseTree;
 }
 
-void TreeBuilderParserInstance::rewrite()
+void TreeBuilderParser::rewrite()
 {
+    mParseTree.clear();
+
     ParseTree::Iterator treeIter = mParseTree.root();
     mParseTree.insert( treeIter, ParseNode(getGrammar().getStartSymbol(),
                 0, getStr().size()) );
@@ -32,13 +36,18 @@ void TreeBuilderParserInstance::rewrite()
     rewrite(treeIter);
 }
 
-void TreeBuilderParserInstance::rewrite(ParseTree::Iterator treeIter)
+void TreeBuilderParser::resetRewrite()
+{
+    mParseTree.clear();
+}
+
+void TreeBuilderParser::rewrite(ParseTree::Iterator treeIter)
 {
     if((*treeIter).getSymbol().isTerminal())
         return;
 
     State state = findState((*treeIter).getSymbol(),
-            (*treeIter).getEndPosition());
+            (*treeIter).getBeginPosition() + (*treeIter).getSize());
     size_t position = state.getCompletePosition();
     const Rule &rule = state.getRule();
     size_t rulePosition = rule.getBodyLength();
@@ -53,7 +62,8 @@ void TreeBuilderParserInstance::rewrite(ParseTree::Iterator treeIter)
                     position);
             mParseTree.insertChild(treeIter, ParseNode(childState.getHead(),
                         childState.getOriginPosition(),
-                        childState.getCompletePosition()), 0);
+                        childState.getCompletePosition() -
+                        childState.getOriginPosition()), 0);
 
             position = childState.getOriginPosition();
 
@@ -70,7 +80,7 @@ void TreeBuilderParserInstance::rewrite(ParseTree::Iterator treeIter)
     }
 }
 
-ParserInstance::State TreeBuilderParserInstance::findState(const Symbol &head,
+Parser::State TreeBuilderParser::findState(const Symbol &head,
         size_t completePosition) const
 {
     std::vector<States>::const_iterator statesQueueIter = 

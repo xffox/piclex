@@ -3,9 +3,9 @@
 namespace search
 {
 ParseNode::ParseNode(const Symbol &symbol, size_t beginPosition,
-            size_t endPosition)
+            size_t size)
     :mSymbol(symbol)
-    ,mBeginPosition(beginPosition), mEndPosition(endPosition)
+    ,mBeginPosition(beginPosition), mSize(size)
 
 {
 }
@@ -20,9 +20,9 @@ size_t ParseNode::getBeginPosition() const
     return mBeginPosition;
 }
 
-size_t ParseNode::getEndPosition() const
+size_t ParseNode::getSize() const
 {
-    return mEndPosition;
+    return mSize;
 }
 
 }

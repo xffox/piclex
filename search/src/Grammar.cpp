@@ -7,6 +7,10 @@
 
 namespace search
 {
+Grammar::Grammar()
+{
+}
+
 Grammar::Grammar(const Symbols &symbols, const Rules &rules,
         const Symbol &startSymbol)
     :mSymbols(symbols), mRules(rules), mStartSymbol(startSymbol)

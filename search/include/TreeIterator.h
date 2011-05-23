@@ -3,6 +3,7 @@
 
 #include "TreeNode.h"
 #include "BaseExceptions.h"
+#include "TreeVisitor.h"
 
 namespace search
 {
@@ -32,8 +33,12 @@ public:
     T &operator*();
     const T &operator*() const;
 
+    void accept(TreeVisitor<T> *visitor) const;
+
 private:
     TreeIterator(TreeNode<T> *node);
+
+    void changeNode(TreeNode<T> *node);
 
     TreeNode<T> *getParent();
     void setParent(TreeNode<T> *parent);
@@ -117,11 +122,39 @@ const T &TreeIterator<T>::operator*() const
 }
 
 template<class T>
+void TreeIterator<T>::accept(TreeVisitor<T> *visitor) const
+{
+    if(!visitor)
+        throw base::InvalidArgument();
+
+    if(mNode)
+    {
+        visitor->visit(*this);
+
+        TreeIterator<T> treeIterator;
+
+        const typename TreeNode<T>::Nodes &childs = mNode->getChilds();
+        typename TreeNode<T>::Nodes::const_iterator childIter = childs.begin();
+        for(; childIter != childs.end(); ++childIter)
+        {
+            treeIterator.changeNode(*childIter);
+            treeIterator.accept(visitor);
+        }
+    }
+}
+
+template<class T>
+void TreeIterator<T>::changeNode(TreeNode<T> *node)
+{
+    mNode = node;
+    mParent = node?node->getParent():NULL;
+}
+
+template<class T>
 TreeNode<T> *TreeIterator<T>::getParent()
 {
     return mParent;
 }
-
 
 template<class T>
 void TreeIterator<T>::setParent(TreeNode<T> *parent)
