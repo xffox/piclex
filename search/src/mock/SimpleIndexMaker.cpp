@@ -51,6 +51,8 @@ void SimpleIndexMaker::tokenize(std::vector<IndexToken> &tokens,
 void SimpleIndexMaker::makeIndex(InvertedIndex &index,
         const std::vector<IndexToken> &tokens)
 {
+    index.clear();
+
     std::vector<IndexToken>::const_iterator tokensIter = tokens.begin();
     for(; tokensIter != tokens.end(); ++tokensIter)
         index.insert(tokensIter->getTerm(), tokensIter->getDocId());

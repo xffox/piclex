@@ -29,7 +29,7 @@ void IndexMaker::index(const std::vector<DocId> &docIds)
 
     tokenize(tokens, docIds);
 
-    // TODO: probably need to clear
+    mIndex.clear();
     makeIndex(mIndex, tokens);
 }
 

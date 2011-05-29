@@ -15,9 +15,11 @@ public:
 
     virtual DocProcessor *clone() const;
 
-    virtual void setDocument(const Document &document);
+    virtual bool setDocument(const Document &document);
 
     virtual void getTerms(std::set<Term> &terms) const;
+
+    virtual const DocDescription *getDocDescription() const;
 
 private:
     void getWords(std::set<Term> &words, const Document &document) const;

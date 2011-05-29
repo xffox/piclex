@@ -85,163 +85,6 @@ void testParser()
     Grammar::Rules rules;
     Grammar::Symbols symbols;
 
-    const SymbolValue LETTER = 0;
-    const SymbolValue LETTERS = 1;
-    const SymbolValue WORD = 2;
-    const SymbolValue SPACES = 3;
-    const SymbolValue OBJECT = 4;
-    const SymbolValue RELATION = 5;
-    const SymbolValue TARGET = 6;
-
-    Symbol letter(NONTERMINAL, LETTER);
-    Symbol letters(NONTERMINAL, LETTERS);
-    Symbol word(NONTERMINAL, WORD);
-    Symbol spaces(NONTERMINAL, SPACES);
-    Symbol object(NONTERMINAL, OBJECT);
-    Symbol relation(NONTERMINAL, RELATION);
-    Symbol target(NONTERMINAL, TARGET);
-
-    symbols.push_back(letter);
-    symbols.push_back(letters);
-    symbols.push_back(word);
-    symbols.push_back(spaces);
-    symbols.push_back(object);
-    symbols.push_back(relation);
-    symbols.push_back(Symbol('a'));
-    symbols.push_back(Symbol('b'));
-    symbols.push_back(Symbol('c'));
-    symbols.push_back(Symbol('d'));
-    symbols.push_back(Symbol('e'));
-    symbols.push_back(Symbol('f'));
-    symbols.push_back(Symbol('g'));
-    symbols.push_back(Symbol('h'));
-    symbols.push_back(Symbol('i'));
-    symbols.push_back(Symbol('j'));
-    symbols.push_back(Symbol('k'));
-    symbols.push_back(Symbol('l'));
-    symbols.push_back(Symbol('m'));
-    symbols.push_back(Symbol('n'));
-    symbols.push_back(Symbol('o'));
-    symbols.push_back(Symbol('p'));
-    symbols.push_back(Symbol('q'));
-    symbols.push_back(Symbol('r'));
-    symbols.push_back(Symbol('s'));
-    symbols.push_back(Symbol('t'));
-    symbols.push_back(Symbol('u'));
-    symbols.push_back(Symbol('v'));
-    symbols.push_back(Symbol('w'));
-    symbols.push_back(Symbol('x'));
-    symbols.push_back(Symbol('y'));
-    symbols.push_back(Symbol('z'));
-
-    rules.push_back( Rule(letter, sentence("a")) );
-    rules.push_back( Rule(letter, sentence("b")) );
-    rules.push_back( Rule(letter, sentence("c")) );
-    rules.push_back( Rule(letter, sentence("d")) );
-    rules.push_back( Rule(letter, sentence("e")) );
-    rules.push_back( Rule(letter, sentence("f")) );
-    rules.push_back( Rule(letter, sentence("g")) );
-    rules.push_back( Rule(letter, sentence("h")) );
-    rules.push_back( Rule(letter, sentence("i")) );
-    rules.push_back( Rule(letter, sentence("j")) );
-    rules.push_back( Rule(letter, sentence("k")) );
-    rules.push_back( Rule(letter, sentence("l")) );
-    rules.push_back( Rule(letter, sentence("m")) );
-    rules.push_back( Rule(letter, sentence("n")) );
-    rules.push_back( Rule(letter, sentence("o")) );
-    rules.push_back( Rule(letter, sentence("p")) );
-    rules.push_back( Rule(letter, sentence("q")) );
-    rules.push_back( Rule(letter, sentence("r")) );
-    rules.push_back( Rule(letter, sentence("s")) );
-    rules.push_back( Rule(letter, sentence("t")) );
-    rules.push_back( Rule(letter, sentence("u")) );
-    rules.push_back( Rule(letter, sentence("v")) );
-    rules.push_back( Rule(letter, sentence("w")) );
-    rules.push_back( Rule(letter, sentence("x")) );
-    rules.push_back( Rule(letter, sentence("y")) );
-    rules.push_back( Rule(letter, sentence("z")) );
-    rules.push_back( Rule(spaces, sentence(" ")) );
-
-    Sentence sentence;
-
-    sentence.push_back(letter);
-    rules.push_back( Rule(letters, sentence) );
-    sentence.clear();
-
-    sentence.push_back(letters);
-    sentence.push_back(letter);
-    rules.push_back( Rule(letters, sentence) );
-    sentence.clear();
-
-    sentence.push_back(letters);
-    rules.push_back( Rule(word, sentence) );
-    sentence.clear();
-
-    sentence.push_back(spaces);
-    sentence.push_back(Symbol(' '));
-    rules.push_back( Rule(spaces, sentence) );
-    sentence.clear();
-
-    sentence.push_back(word);
-    rules.push_back( Rule(object, sentence) );
-    sentence.clear();
-
-    sentence.push_back(word);
-    rules.push_back( Rule(relation, sentence) );
-    sentence.clear();
-
-    sentence.push_back(spaces);
-    sentence.push_back(object);
-    sentence.push_back(spaces);
-    sentence.push_back(relation);
-    sentence.push_back(spaces);
-    sentence.push_back(object);
-    sentence.push_back(spaces);
-    rules.push_back( Rule(target, sentence) );
-    sentence.clear();
-
-    Parser parser(Grammar(symbols, rules, target));
-
-    printValidation(parser, "abbb or bc");
-    printValidation(parser, "abbb  or  bc");
-    printValidation(parser, "aa or");
-    printValidation(parser, "or or cdddddd");
-    printValidation(parser, "cdddddd or or");
-    printValidation(parser, "or aa");
-    printValidation(parser, "abbb or bc or");
-}
-
-void testTree()
-{
-    Tree<int> tree;
-
-    Tree<int>::Iterator iter = tree.root();
-    tree.insert(iter, 42);
-    tree.insert(iter, 43);
-    iter.up();
-    iter.up();
-    tree.insert(iter, 44);
-    iter.up();
-    tree.insertChild(iter, 45, 1);
-    tree.appendChild(iter, 46);
-    iter.down(2);
-    tree.appendChild(iter, 47);
-
-#if 0
-    iter = tree.root();
-    while(!iter.isEnd())
-    {
-        std::cout<<*iter<<'\n';
-        iter.down(0);
-    }
-#endif
-}
-
-void testTreeBuilderParserInstance()
-{
-    Grammar::Rules rules;
-    Grammar::Symbols symbols;
-
     const SymbolValue mValueLetter = 0;
     const SymbolValue mValueLetters = 1;
     const SymbolValue mValueWord = 2;
@@ -249,8 +92,9 @@ void testTreeBuilderParserInstance()
     const SymbolValue mValueObject = 4;
     const SymbolValue mValueRelation = 5;
     const SymbolValue mValueObjectsRelation = 6;
-    const SymbolValue mValueObjectsRelations = 7;
-    const SymbolValue mValueTarget = 8;
+    const SymbolValue mValueDescription = 7;
+    const SymbolValue mValueDescriptions = 8;
+    const SymbolValue mValueTarget = 9;
 
     Symbol mSymbolLetter = Symbol(NONTERMINAL, mValueLetter);
     Symbol mSymbolLetters = Symbol(NONTERMINAL, mValueLetters);
@@ -259,7 +103,8 @@ void testTreeBuilderParserInstance()
     Symbol mSymbolObject = Symbol(NONTERMINAL, mValueObject);
     Symbol mSymbolRelation = Symbol(NONTERMINAL, mValueRelation);
     Symbol mSymbolObjectsRelation = Symbol(NONTERMINAL, mValueObjectsRelation);
-    Symbol mSymbolObjectsRelations = Symbol(NONTERMINAL, mValueObjectsRelations);
+    Symbol mSymbolDescription = Symbol(NONTERMINAL, mValueDescription);
+    Symbol mSymbolDescriptions = Symbol(NONTERMINAL, mValueDescriptions);
     Symbol mSymbolTarget = Symbol(NONTERMINAL, mValueTarget);
 
     symbols.push_back(mSymbolLetter);
@@ -268,7 +113,9 @@ void testTreeBuilderParserInstance()
     symbols.push_back(mSymbolSpaces);
     symbols.push_back(mSymbolObject);
     symbols.push_back(mSymbolRelation);
-    symbols.push_back(mSymbolObjectsRelations);
+    symbols.push_back(mSymbolObjectsRelation);
+    symbols.push_back(mSymbolDescription);
+    symbols.push_back(mSymbolDescriptions);
     symbols.push_back(mSymbolTarget);
     symbols.push_back(Symbol('a'));
     symbols.push_back(Symbol('b'));
@@ -361,51 +208,256 @@ void testTreeBuilderParserInstance()
     rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
     sentence.clear();
 
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolRelation);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
-    sentence.clear();
-
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolRelation);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
-    sentence.clear();
-
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolRelation);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
-    sentence.clear();
-
     sentence.push_back(mSymbolObjectsRelation);
+    rules.push_back( Rule(mSymbolDescription, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolObject);
+    rules.push_back( Rule(mSymbolDescription, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolDescription);
+    rules.push_back( Rule(mSymbolDescriptions, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolDescription);
+    rules.push_back( Rule(mSymbolDescriptions, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolDescription);
+    sentence.push_back(mSymbolSpaces);
+    rules.push_back( Rule(mSymbolDescriptions, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolDescription);
+    sentence.push_back(mSymbolSpaces);
+    rules.push_back( Rule(mSymbolDescriptions, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolDescriptions);
     sentence.push_back(',');
-    sentence.push_back(mSymbolObjectsRelation);
-    rules.push_back( Rule(mSymbolObjectsRelations, sentence) );
+    sentence.push_back(mSymbolDescriptions);
+    rules.push_back( Rule(mSymbolDescriptions, sentence) );
     sentence.clear();
 
-    sentence.push_back(mSymbolObjectsRelations);
-    sentence.push_back(',');
-    sentence.push_back(mSymbolObjectsRelation);
-    rules.push_back( Rule(mSymbolObjectsRelations, sentence) );
-    sentence.clear();
-
-    sentence.push_back(mSymbolObjectsRelation);
+    sentence.push_back(mSymbolDescriptions);
     rules.push_back( Rule(mSymbolTarget, sentence) );
     sentence.clear();
 
-    sentence.push_back(mSymbolObjectsRelations);
+    Parser parser(Grammar(symbols, rules, mSymbolTarget));
+
+    printValidation(parser, "abbb or bc");
+    printValidation(parser, "abbb  or  bc");
+    printValidation(parser, "aa or");
+    printValidation(parser, "or or cdddddd");
+    printValidation(parser, "cdddddd or or");
+    printValidation(parser, "or aa");
+    printValidation(parser, "abbb or bc or");
+    printValidation(parser, "abbb or bc, cd or ls");
+}
+
+void testTree()
+{
+    Tree<int> tree;
+
+    Tree<int>::Iterator iter = tree.root();
+    tree.insert(iter, 42);
+    tree.insert(iter, 43);
+    iter.up();
+    iter.up();
+    tree.insert(iter, 44);
+    iter.up();
+    tree.insertChild(iter, 45, 1);
+    tree.appendChild(iter, 46);
+    iter.down(2);
+    tree.appendChild(iter, 47);
+
+#if 0
+    iter = tree.root();
+    while(!iter.isEnd())
+    {
+        std::cout<<*iter<<'\n';
+        iter.down(0);
+    }
+#endif
+}
+
+void testTreeBuilderParserInstance()
+{
+    Grammar::Rules rules;
+    Grammar::Symbols symbols;
+
+    const SymbolValue mValueLetter = 0;
+    const SymbolValue mValueLetters = 1;
+    const SymbolValue mValueWord = 2;
+    const SymbolValue mValueSpaces = 3;
+    const SymbolValue mValueObject = 4;
+    const SymbolValue mValueRelation = 5;
+    const SymbolValue mValueObjectsRelation = 6;
+    const SymbolValue mValueDescription = 7;
+    const SymbolValue mValuePhrase = 8;
+    const SymbolValue mValuePhrases = 9;
+    const SymbolValue mValueTarget = 10;
+
+    Symbol mSymbolLetter = Symbol(NONTERMINAL, mValueLetter);
+    Symbol mSymbolLetters = Symbol(NONTERMINAL, mValueLetters);
+    Symbol mSymbolWord = Symbol(NONTERMINAL, mValueWord);
+    Symbol mSymbolSpaces = Symbol(NONTERMINAL, mValueSpaces);
+    Symbol mSymbolObject = Symbol(NONTERMINAL, mValueObject);
+    Symbol mSymbolRelation = Symbol(NONTERMINAL, mValueRelation);
+    Symbol mSymbolObjectsRelation = Symbol(NONTERMINAL, mValueObjectsRelation);
+    Symbol mSymbolDescription = Symbol(NONTERMINAL, mValueDescription);
+    Symbol mSymbolPhrase = Symbol(NONTERMINAL, mValuePhrase);
+    Symbol mSymbolPhrases = Symbol(NONTERMINAL, mValuePhrases);
+    Symbol mSymbolTarget = Symbol(NONTERMINAL, mValueTarget);
+
+    symbols.push_back(mSymbolLetter);
+    symbols.push_back(mSymbolLetters);
+    symbols.push_back(mSymbolWord);
+    symbols.push_back(mSymbolSpaces);
+    symbols.push_back(mSymbolObject);
+    symbols.push_back(mSymbolRelation);
+    symbols.push_back(mSymbolObjectsRelation);
+    symbols.push_back(mSymbolDescription);
+    symbols.push_back(mSymbolTarget);
+    symbols.push_back(Symbol('a'));
+    symbols.push_back(Symbol('b'));
+    symbols.push_back(Symbol('c'));
+    symbols.push_back(Symbol('d'));
+    symbols.push_back(Symbol('e'));
+    symbols.push_back(Symbol('f'));
+    symbols.push_back(Symbol('g'));
+    symbols.push_back(Symbol('h'));
+    symbols.push_back(Symbol('i'));
+    symbols.push_back(Symbol('j'));
+    symbols.push_back(Symbol('k'));
+    symbols.push_back(Symbol('l'));
+    symbols.push_back(Symbol('m'));
+    symbols.push_back(Symbol('n'));
+    symbols.push_back(Symbol('o'));
+    symbols.push_back(Symbol('p'));
+    symbols.push_back(Symbol('q'));
+    symbols.push_back(Symbol('r'));
+    symbols.push_back(Symbol('s'));
+    symbols.push_back(Symbol('t'));
+    symbols.push_back(Symbol('u'));
+    symbols.push_back(Symbol('v'));
+    symbols.push_back(Symbol('w'));
+    symbols.push_back(Symbol('x'));
+    symbols.push_back(Symbol('y'));
+    symbols.push_back(Symbol('z'));
+
+    rules.push_back( Rule(mSymbolLetter, sentence("a")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("b")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("c")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("d")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("e")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("f")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("g")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("h")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("i")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("j")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("k")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("l")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("m")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("n")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("o")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("p")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("q")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("r")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("s")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("t")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("u")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("v")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("w")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("x")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("y")) );
+    rules.push_back( Rule(mSymbolLetter, sentence("z")) );
+    rules.push_back( Rule(mSymbolSpaces, sentence(" ")) );
+
+    Sentence sentence;
+
+    sentence.push_back(mSymbolLetter);
+    rules.push_back( Rule(mSymbolLetters, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolLetters);
+    sentence.push_back(mSymbolLetter);
+    rules.push_back( Rule(mSymbolLetters, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolLetters);
+    rules.push_back( Rule(mSymbolWord, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(Symbol(' '));
+    rules.push_back( Rule(mSymbolSpaces, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolWord);
+    rules.push_back( Rule(mSymbolObject, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolWord);
+    rules.push_back( Rule(mSymbolRelation, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolObject);
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolRelation);
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolObject);
+    rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolObjectsRelation);
+    rules.push_back( Rule(mSymbolDescription, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolObject);
+    rules.push_back( Rule(mSymbolDescription, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolDescription);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolDescription);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolDescription);
+    sentence.push_back(mSymbolSpaces);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolDescription);
+    sentence.push_back(mSymbolSpaces);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolPhrase);
+    sentence.push_back(',');
+    sentence.push_back(mSymbolPhrase);
+    rules.push_back( Rule(mSymbolPhrases, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolPhrases);
+    sentence.push_back(',');
+    sentence.push_back(mSymbolPhrase);
+    rules.push_back( Rule(mSymbolPhrases, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolPhrase);
+    rules.push_back( Rule(mSymbolTarget, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolPhrases);
     rules.push_back( Rule(mSymbolTarget, sentence) );
     sentence.clear();
 
@@ -424,8 +476,11 @@ void testTreeBuilderParserInstance()
     printParseTree(parser, "  liberty or death");
     printParseTree(parser, " liberty or death  ");
     printParseTree(parser, "circle left square, square left circle");
-    printParseTree(parser, "circle left square, square left circle,triangle on circle");
+    printParseTree(parser, "circle left square, square left circle,"
+            "triangle on circle");
     printParseTree(parser, "circle and circle");
+    printParseTree(parser, "circle left circle, square down circle, "
+            "circle in square, square in square");
 }
 }
 

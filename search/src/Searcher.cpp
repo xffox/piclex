@@ -40,24 +40,28 @@ Searcher::~Searcher()
     delete mQueryProcessor;
 }
 
-std::vector<std::string> Searcher::search(const std::string &query)
+bool Searcher::search(std::vector<std::string> &results,
+        const std::string &query)
 {
     base::Log().debug("Searcher: query '%s'", query.c_str());
 
-    std::vector<std::string> names;
-
     if(query.size() > 0)
     {
-        std::vector<DocId> docIds = mIndexSearcher->search(query);
+        std::vector<DocId> docIds;
+        if(!mIndexSearcher->search(docIds, query))
+        {
+            base::Log().debug("invalid query");
+            return false;
+        }
 
-        getNames(names, docIds);
+        getNames(results, docIds);
     }
     else
     {
-        mDocIdStorage.getValues(names);
+        mDocIdStorage.getValues(results);
     }
 
-    return names;
+    return true;
 }
 
 void Searcher::setPath(const std::string &path)

@@ -9,8 +9,6 @@ DocDescription::~DocDescription()
 void DocDescription::addObject(const DescriptionObject &object)
 {
     getNewObjectIndex(object);
-
-    processAddObject(object);
 }
 
 void DocDescription::addRelation(const DescriptionObject &firstObject,
@@ -30,17 +28,6 @@ void DocDescription::addRelation(const DescriptionObject &firstObject,
     {
         throw DocDescriptionInternalError();
     }
-
-    processAddRelation(firstObject, secondObject, relation);
-}
-
-bool DocDescription::operator==(const DocDescription &that) const
-{
-    if(mObjects.size() != that.mObjects.size() ||
-            mRelations.size() != that.mRelations.size())
-        return false;
-
-    return isSubsetEq(that);
 }
 
 bool DocDescription::isSubsetEq(const DocDescription &that) const
@@ -49,37 +36,46 @@ bool DocDescription::isSubsetEq(const DocDescription &that) const
             mRelations.size() > that.mRelations.size())
         return false;
 
-    Objects::const_iterator objectIter = mObjects.begin();
-    Relations::const_iterator relationIter;
-    size_t thisObjectIndex = 0;
+    size_t thisFirstObjectIndex = 0;
+    size_t thisSecondObjectIndex = 0;
     size_t thisRelationIndex = 0;
-    size_t thatObjectIndex = 0;
+    size_t thatFirstObjectIndex = 0;
+    size_t thatSecondObjectIndex = 0;
     size_t thatRelationIndex = 0;
-    //FIXME
-    for(; objectIter != mObjects.end(); ++objectIter)
+    for(thisRelationIndex = 0; thisRelationIndex < mRelations.size();
+            ++thisRelationIndex)
     {
-        thatObjectIndex = that.getObjectIndex(*objectIter);
-        if(thatObjectIndex == that.mObjects.size())
+        thatRelationIndex = that.getRelationIndex(
+                mRelations[thisRelationIndex]);
+        if(thatRelationIndex == that.mRelations.size())
             return false;
-
-        thisObjectIndex = objectIter - mObjects.begin();
-
-        for(relationIter = mRelations.begin();
-                relationIter != mRelations.end(); ++relationIter)
+    
+        for(thisFirstObjectIndex = 0; thisFirstObjectIndex < mObjects.size();
+                ++thisFirstObjectIndex)
         {
-            thatRelationIndex = that.getRelationIndex(*relationIter);
-            if(thatRelationIndex == that.mRelations.size())
+            thatFirstObjectIndex = that.getObjectIndex(
+                    mObjects[thisFirstObjectIndex]);
+            if(thatFirstObjectIndex == that.mObjects.size())
                 return false;
 
-            thisRelationIndex = relationIter - mRelations.begin();
+            for(thisSecondObjectIndex = 0; thisSecondObjectIndex <
+                    mObjects.size(); ++thisSecondObjectIndex)
+            {
+                thatSecondObjectIndex = that.getObjectIndex(
+                        mObjects[thisSecondObjectIndex]);
+                if(thatSecondObjectIndex == that.mObjects.size())
+                    return false;
 
-            if(mObjectsRelations.get(thisRelationIndex, thisObjectIndex,
-                        thisObjectIndex) !=
-                    that.mObjectsRelations.get(thatRelationIndex,
-                        thatObjectIndex, thatObjectIndex))
-                return false;
+                if(mObjectsRelations.get(thisRelationIndex,
+                            thisFirstObjectIndex, thisSecondObjectIndex) &&
+                        !that.mObjectsRelations.get(thatRelationIndex,
+                            thatFirstObjectIndex, thatSecondObjectIndex))
+                    return false;
+            }
+
         }
     }
+
     return true;
 }
 
@@ -108,13 +104,12 @@ bool DocDescription::isObjectsRelation(const DescriptionObject &firstObject,
             secondObjectIndex);
 }
 
-void DocDescription::processAddObject(const DescriptionObject&) const
+void DocDescription::clear()
 {
-}
+    mObjectsRelations = Matrix3d<bool>();
 
-void DocDescription::processAddRelation(const DescriptionObject&,
-        const DescriptionObject&, const DescriptionRelation&) const
-{
+    mObjects.clear();
+    mRelations.clear();
 }
 
 size_t DocDescription::getObjectIndex(const DescriptionObject &object) const
@@ -172,6 +167,21 @@ size_t DocDescription::getNewRelationIndex(const DescriptionRelation &relation)
     }
 
     return index;
+}
+
+Matrix3d<bool> &DocDescription::getObjectsRelations()
+{
+    return mObjectsRelations;
+}
+
+DocDescription::Objects &DocDescription::getObjects()
+{
+    return mObjects;
+}
+
+DocDescription::Relations &DocDescription::getRelations()
+{
+    return mRelations;
 }
 
 }

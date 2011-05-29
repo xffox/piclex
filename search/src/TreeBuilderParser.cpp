@@ -47,6 +47,7 @@ void TreeBuilderParser::rewrite(ParseTree::Iterator treeIter)
         return;
 
     State state = findState((*treeIter).getSymbol(),
+            (*treeIter).getBeginPosition(),
             (*treeIter).getBeginPosition() + (*treeIter).getSize());
     size_t position = state.getCompletePosition();
     const Rule &rule = state.getRule();
@@ -80,19 +81,59 @@ void TreeBuilderParser::rewrite(ParseTree::Iterator treeIter)
     }
 }
 
+class CompareHeadAndCompletePos
+{
+public:
+    CompareHeadAndCompletePos(const Symbol &head, size_t completePosition)
+        :mHead(head), mCompletePosition(completePosition)
+    {
+    }
+
+    bool operator()(const Parser::State &state) const
+    {
+        return state.getHead() == mHead &&
+            state.getCompletePosition() == mCompletePosition;
+    }
+
+private:
+    Symbol mHead;
+    size_t mCompletePosition;
+};
+
 Parser::State TreeBuilderParser::findState(const Symbol &head,
         size_t completePosition) const
 {
-    std::vector<States>::const_iterator statesQueueIter = 
-        getStatesQueue().begin();
-    States::const_iterator statesIter;
-    for(; statesQueueIter != getStatesQueue().end(); ++statesQueueIter)
-        for(statesIter = statesQueueIter->begin();
-                statesIter != statesQueueIter->end(); ++statesIter)
-            if(statesIter->getHead() == head &&
-                    statesIter->getCompletePosition() == completePosition)
-                return *statesIter;
-    throw base::NotFoundError();
+    return findState(CompareHeadAndCompletePos(head, completePosition));
+}
+
+class CompareHeadAndOriginPosAndCompletePos
+{
+public:
+    CompareHeadAndOriginPosAndCompletePos(const Symbol &head,
+            size_t originPosition, size_t completePosition)
+        :mHead(head), mOriginPosition(originPosition)
+        ,mCompletePosition(completePosition)
+    {
+    }
+
+    bool operator()(const Parser::State &state) const
+    {
+        return state.getHead() == mHead &&
+            state.getOriginPosition() == mOriginPosition &&
+            state.getCompletePosition() == mCompletePosition;
+    }
+
+private:
+    Symbol mHead;
+    size_t mOriginPosition;
+    size_t mCompletePosition;
+};
+
+Parser::State TreeBuilderParser::findState(const Symbol &head,
+        size_t originPosition, size_t completePosition) const
+{
+    return findState(CompareHeadAndOriginPosAndCompletePos(head,
+                originPosition, completePosition));
 }
 
 }

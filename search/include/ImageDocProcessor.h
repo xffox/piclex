@@ -4,6 +4,7 @@
 #include "DocProcessor.h"
 #include "Grammar.h"
 #include "TreeBuilderParser.h"
+#include "ImageDocDescription.h"
 
 namespace search
 {
@@ -16,9 +17,11 @@ public:
 
     virtual DocProcessor *clone() const;
 
-    virtual void setDocument(const Document &document);
+    virtual bool setDocument(const Document &document);
 
     virtual void getTerms(std::set<Term> &terms) const;
+
+    virtual const DocDescription *getDocDescription() const;
 
 private:
     void initGrammar();
@@ -29,6 +32,8 @@ private:
     Document mDocument;
 
     std::set<Term> mTerms;
+
+    ImageDocDescription mDocDescription;
 
     Grammar mGrammar;
 
@@ -41,7 +46,10 @@ private:
     SymbolValue mValueObject;
     SymbolValue mValueRelation;
     SymbolValue mValueObjectsRelation;
-    SymbolValue mValueObjectsRelations;
+    SymbolValue mValueDescription;
+    SymbolValue mValueDescriptions;
+    SymbolValue mValuePhrase;
+    SymbolValue mValuePhrases;
     SymbolValue mValueTarget;
 
     Symbol mSymbolLetter;
@@ -51,7 +59,9 @@ private:
     Symbol mSymbolObject;
     Symbol mSymbolRelation;
     Symbol mSymbolObjectsRelation;
-    Symbol mSymbolObjectsRelations;
+    Symbol mSymbolDescription;
+    Symbol mSymbolPhrase;
+    Symbol mSymbolPhrases;
     Symbol mSymbolTarget;
 };
 

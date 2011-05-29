@@ -1,7 +1,7 @@
 #ifndef SUBSENTENCE_GATHERER_H
 #define SUBSENTENCE_GATHERER_H
 
-#include <set>
+#include <vector>
 #include <string>
 
 #include "ParseNode.h"
@@ -19,7 +19,7 @@ public:
 
     virtual void visit(const TreeIterator<ParseNode> &iterator);
 
-    const std::set<std::string> &getSubsentences() const;
+    const std::vector<std::string> &getSubsentences() const;
 
     void clear();
 
@@ -28,7 +28,7 @@ private:
 
     Symbol mGatheredSymbol;
 
-    std::set<std::string> mSubsentences;
+    std::vector<std::string> mSubsentences;
 };
 
 }

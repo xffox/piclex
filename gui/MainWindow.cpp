@@ -26,6 +26,8 @@ MainWindow::MainWindow()
     mUi.listView->setItemDelegate(delegate);
 
     setDirectory(QDir::homePath());
+
+    mSearchEditStyleSheet = mUi.searchEdit->styleSheet();
 }
 
 void MainWindow::setDirectory(const QString &path)
@@ -34,14 +36,15 @@ void MainWindow::setDirectory(const QString &path)
         mUi.directoryLabel->setText(path);
 }
 
-void MainWindow::setSearchStr(const QString &str)
+bool MainWindow::setSearchStr(const QString &str)
 {
-    mModel.setSearchStr(str);
+    return mModel.setSearchStr(str);
 }
 
 void MainWindow::search()
 {
-    setSearchStr(mUi.searchEdit->text());
+    if( !setSearchStr(mUi.searchEdit->text()) )
+        highlightQuery(true);
 }
 
 void MainWindow::openItem(const QModelIndex &index)
@@ -54,6 +57,11 @@ void MainWindow::openItem(const QModelIndex &index)
         base::Log().debug("Open file '%s' %s", qPrintable(filename),
                 res?"":"failed");
     }
+}
+
+void MainWindow::disableQueryHighlight()
+{
+    highlightQuery(false);
 }
 
 void MainWindow::selectDirectory()
@@ -80,6 +88,17 @@ void MainWindow::connectToSignals()
 
     connect( mUi.listView, SIGNAL(activated(const QModelIndex&)), this,
             SLOT(openItem(const QModelIndex&)) );
+
+    connect( mUi.searchEdit, SIGNAL(textChanged(const QString&)), this,
+            SLOT(disableQueryHighlight()) );
+}
+
+void MainWindow::highlightQuery(bool highlighted)
+{
+    if(highlighted)
+        mUi.searchEdit->setStyleSheet("background-color : red");
+    else
+        mUi.searchEdit->setStyleSheet(mSearchEditStyleSheet);
 }
 
 }

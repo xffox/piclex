@@ -19,7 +19,7 @@ public:
 
 public slots:
     void setDirectory(const QString &path);
-    void setSearchStr(const QString &str);
+    bool setSearchStr(const QString &str);
 
     void selectDirectory();
 
@@ -27,13 +27,19 @@ public slots:
 
     void openItem(const QModelIndex &index);
 
+    void disableQueryHighlight();
+
 private:
     void connectToSignals();
+
+    void highlightQuery(bool highlighted);
 
 private:
     Ui::MainWindow mUi;
 
     SearchModel mModel;
+
+    QString mSearchEditStyleSheet;
 };
 
 }

@@ -19,13 +19,13 @@ public:
     virtual ~SimpleIndexSearcher();
 
     virtual void getQueryTerms(std::set<Term> &terms,
-            const std::string &query) const;
+            const DocProcessor *queryProcessor) const;
 
     virtual void search(std::vector<DocId> &docIds,
             const std::set<Term> &terms) const;
 
     virtual void filter(std::vector<DocId> &docIds,
-            const std::string &query) const;
+            const DocProcessor *queryProcessor) const;
 };
 
 }

@@ -89,14 +89,11 @@ bool SearchModel::setSearchStr(const QString &str)
         mSearchStr = str;
 
         assert(mSearchEngine);
-        if(mSearchEngine->setSearchStr(str))
-        {
-            updateResults();
-            return true;
-        }
-        return false;
+        bool res = mSearchEngine->setSearchStr(str);
+        updateResults();
+        return res;
     }
-    return true;
+    return mSearchEngine->isValidSearchStr();
 }
 
 void SearchModel::onItemChanged()

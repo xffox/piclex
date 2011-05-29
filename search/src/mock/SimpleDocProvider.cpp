@@ -39,10 +39,10 @@ namespace search
 void SimpleDocProvider::listNames(std::vector<std::string> &names,
         const std::string &path) const
 {
-    ExtensionFilter filter("jpg");
+    ExtensionFilter filter("png");
     try
     {
-        base::FsUtil::listFiles(names, path);
+        base::FsUtil::listFiles(names, path, &filter);
     }
     catch(base::FsUtilError &exc)
     {

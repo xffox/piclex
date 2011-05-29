@@ -21,7 +21,7 @@ public:
 
     void setIndex(const InvertedIndex &index);
 
-    std::vector<DocId> search(const std::string &query) const;
+    bool search(std::vector<DocId> &results, const std::string &query) const;
 
 protected:
     const InvertedIndex &getIndex() const;
@@ -32,13 +32,13 @@ protected:
 
 private:
     virtual void getQueryTerms(std::set<Term> &terms,
-            const std::string &query) const = 0;
+            const DocProcessor *queryProcessor) const = 0;
 
     virtual void search(std::vector<DocId> &docIds,
             const std::set<Term> &terms) const = 0;
 
     virtual void filter(std::vector<DocId> &docIds,
-            const std::string &query) const = 0;
+            const DocProcessor *queryProcessor) const = 0;
 
 private:
     InvertedIndex mIndex;

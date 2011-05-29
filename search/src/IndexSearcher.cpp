@@ -1,5 +1,8 @@
 #include "IndexSearcher.h"
 
+#include <memory>
+
+#include "Logger.h"
 #include "BaseExceptions.h"
 #include "DocProcessor.h"
 
@@ -25,18 +28,32 @@ void IndexSearcher::setIndex(const InvertedIndex &index)
     mIndex = index;
 }
 
-std::vector<DocId> IndexSearcher::search(const std::string &query) const
+bool IndexSearcher::search(std::vector<DocId> &results,
+        const std::string &query) const
 {
-    std::vector<DocId> results;
+    if(!mQueryProcessor)
+        throw base::InternalError();
+
+    std::auto_ptr<DocProcessor> queryProcessor(mQueryProcessor->clone());
+
+    if(!queryProcessor->setDocument(query))
+        return false;
+
     std::set<Term> terms;
 
-    getQueryTerms(terms, query);
+    getQueryTerms(terms, queryProcessor.get());
 
     search(results, terms);
 
-    filter(results, query);
+    base::Log().debug("search find %zu docs in index",
+            results.size());
 
-    return results;
+    filter(results, queryProcessor.get());
+
+    base::Log().debug("search find %zu docs after filter",
+            results.size());
+
+    return true;
 }
 
 const InvertedIndex &IndexSearcher::getIndex() const

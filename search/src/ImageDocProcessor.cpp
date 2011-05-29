@@ -1,7 +1,9 @@
 #include "ImageDocProcessor.h"
 
 #include "Logger.h"
+#include "BaseUtil.h"
 #include "SubsentenceGatherer.h"
+#include "DocDescriptionGatherer.h"
 
 namespace search
 {
@@ -21,30 +23,42 @@ DocProcessor *ImageDocProcessor::clone() const
     return new ImageDocProcessor(*this);
 }
 
-void ImageDocProcessor::setDocument(const Document &document)
+bool ImageDocProcessor::setDocument(const Document &document)
 {
-    mDocument = document;
-
-    mTerms.clear();
-
     if(mParser.parse(document))
     {
+        mDocument = document;
+
+        mTerms.clear();
+        mDocDescription.clear();
+
         SubsentenceGatherer gatherer(mDocument, mSymbolObject);
 
         mParser.getParseTree().root().accept(&gatherer);
 
-        mTerms = gatherer.getSubsentences();
+        base::vectorToSet(mTerms, gatherer.getSubsentences());
+
+        DocDescriptionGatherer docDescriptionGatherer(&mDocDescription,
+                mDocument, mSymbolObject, mSymbolRelation,
+                mSymbolDescription);
+
+        mParser.getParseTree().root().accept(&docDescriptionGatherer);
+
+        return true;
     }
-    else
-    {
-        base::Log().warning("invalid image description [%s]",
-                document.c_str());
-    }
+    base::Log().warning("invalid image description [%s]",
+            document.c_str());
+    return false;
 }
 
 void ImageDocProcessor::getTerms(std::set<Term> &terms) const
 {
     terms = mTerms;
+}
+
+const DocDescription *ImageDocProcessor::getDocDescription() const
+{
+    return &mDocDescription;
 }
 
 void ImageDocProcessor::initGrammar()
@@ -59,8 +73,10 @@ void ImageDocProcessor::initGrammar()
     mValueObject = 4;
     mValueRelation = 5;
     mValueObjectsRelation = 6;
-    mValueObjectsRelations = 7;
-    mValueTarget = 8;
+    mValueDescription = 7;
+    mValuePhrase = 8;
+    mValuePhrases = 9;
+    mValueTarget = 10;
 
     mSymbolLetter = Symbol(NONTERMINAL, mValueLetter);
     mSymbolLetters = Symbol(NONTERMINAL, mValueLetters);
@@ -69,7 +85,9 @@ void ImageDocProcessor::initGrammar()
     mSymbolObject = Symbol(NONTERMINAL, mValueObject);
     mSymbolRelation = Symbol(NONTERMINAL, mValueRelation);
     mSymbolObjectsRelation = Symbol(NONTERMINAL, mValueObjectsRelation);
-    mSymbolObjectsRelations = Symbol(NONTERMINAL, mValueObjectsRelations);
+    mSymbolDescription = Symbol(NONTERMINAL, mValueDescription);
+    mSymbolPhrase = Symbol(NONTERMINAL, mValuePhrase);
+    mSymbolPhrases = Symbol(NONTERMINAL, mValuePhrases);
     mSymbolTarget = Symbol(NONTERMINAL, mValueTarget);
 
     symbols.push_back(mSymbolLetter);
@@ -78,7 +96,10 @@ void ImageDocProcessor::initGrammar()
     symbols.push_back(mSymbolSpaces);
     symbols.push_back(mSymbolObject);
     symbols.push_back(mSymbolRelation);
-    symbols.push_back(mSymbolObjectsRelations);
+    symbols.push_back(mSymbolObjectsRelation);
+    symbols.push_back(mSymbolDescription);
+    symbols.push_back(mSymbolPhrase);
+    symbols.push_back(mSymbolPhrases);
     symbols.push_back(mSymbolTarget);
     symbols.push_back(Symbol('a'));
     symbols.push_back(Symbol('b'));
@@ -171,51 +192,51 @@ void ImageDocProcessor::initGrammar()
     rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
     sentence.clear();
 
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolRelation);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
-    sentence.clear();
-
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolRelation);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
-    sentence.clear();
-
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolRelation);
-    sentence.push_back(mSymbolSpaces);
-    sentence.push_back(mSymbolObject);
-    sentence.push_back(mSymbolSpaces);
-    rules.push_back( Rule(mSymbolObjectsRelation, sentence) );
-    sentence.clear();
-
     sentence.push_back(mSymbolObjectsRelation);
+    rules.push_back( Rule(mSymbolDescription, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolObject);
+    rules.push_back( Rule(mSymbolDescription, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolDescription);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolDescription);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolDescription);
+    sentence.push_back(mSymbolSpaces);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolSpaces);
+    sentence.push_back(mSymbolDescription);
+    sentence.push_back(mSymbolSpaces);
+    rules.push_back( Rule(mSymbolPhrase, sentence) );
+    sentence.clear();
+
+    sentence.push_back(mSymbolPhrase);
     sentence.push_back(',');
-    sentence.push_back(mSymbolObjectsRelation);
-    rules.push_back( Rule(mSymbolObjectsRelations, sentence) );
+    sentence.push_back(mSymbolPhrase);
+    rules.push_back( Rule(mSymbolPhrases, sentence) );
     sentence.clear();
 
-    sentence.push_back(mSymbolObjectsRelations);
+    sentence.push_back(mSymbolPhrases);
     sentence.push_back(',');
-    sentence.push_back(mSymbolObjectsRelation);
-    rules.push_back( Rule(mSymbolObjectsRelations, sentence) );
+    sentence.push_back(mSymbolPhrase);
+    rules.push_back( Rule(mSymbolPhrases, sentence) );
     sentence.clear();
 
-    sentence.push_back(mSymbolObjectsRelation);
+    sentence.push_back(mSymbolPhrase);
     rules.push_back( Rule(mSymbolTarget, sentence) );
     sentence.clear();
 
-    sentence.push_back(mSymbolObjectsRelations);
+    sentence.push_back(mSymbolPhrases);
     rules.push_back( Rule(mSymbolTarget, sentence) );
     sentence.clear();
 

@@ -25,12 +25,11 @@ class DocDescription
 public:
     virtual ~DocDescription();
 
-    void addObject(const DescriptionObject &object);
-    void addRelation(const DescriptionObject &firstObject,
+    virtual void addObject(const DescriptionObject &object);
+    virtual void addRelation(const DescriptionObject &firstObject,
             const DescriptionObject &secondObject,
             const DescriptionRelation &relation);
 
-    bool operator==(const DocDescription &that) const;
     bool isSubsetEq(const DocDescription &that) const;
 
     bool isObject(const DescriptionObject &object) const;
@@ -38,18 +37,19 @@ public:
             const DescriptionObject &secondObject,
             const DescriptionRelation &relation) const;
 
-private:
-    virtual void processAddObject(const DescriptionObject &object) const;
-    virtual void processAddRelation(const DescriptionObject &firstObject,
-            const DescriptionObject &secondObject,
-            const DescriptionRelation &relation) const;
+    void clear();
 
-private:
+protected:
     size_t getObjectIndex(const DescriptionObject &object) const;
     size_t getRelationIndex(const DescriptionRelation &relation) const;
 
     size_t getNewObjectIndex(const DescriptionObject &object);
     size_t getNewRelationIndex(const DescriptionRelation &relation);
+
+    Matrix3d<bool> &getObjectsRelations();
+
+    Objects &getObjects();
+    Relations &getRelations();
 
 private:
     Matrix3d<bool> mObjectsRelations;

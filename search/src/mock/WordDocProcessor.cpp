@@ -11,16 +11,23 @@ DocProcessor *WordDocProcessor::clone() const
     return new WordDocProcessor(*this);
 }
 
-void WordDocProcessor::setDocument(const Document &document)
+bool WordDocProcessor::setDocument(const Document &document)
 {
     mDocument = document;
 
     getWords(mTerms, mDocument);
+
+    return true;
 }
 
 void WordDocProcessor::getTerms(std::set<Term> &terms) const
 {
     terms = mTerms;
+}
+
+const DocDescription *WordDocProcessor::getDocDescription() const
+{
+    return NULL;
 }
 
 void WordDocProcessor::getWords(std::set<Term> &words,

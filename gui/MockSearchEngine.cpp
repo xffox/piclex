@@ -15,6 +15,7 @@ namespace gui
 {
 MockSearchEngine::MockSearchEngine()
     :mSearcher(NULL)
+    ,mValidSearchStr(false)
 {
     DocProvider *docProvider = new SimpleDocProvider();
 
@@ -50,7 +51,7 @@ bool MockSearchEngine::setSearchStr(const QString &str)
 
     updateResults();
 
-    return true;
+    return mValidSearchStr;
 }
 
 const QStringList &MockSearchEngine::getResults() const
@@ -58,15 +59,22 @@ const QStringList &MockSearchEngine::getResults() const
     return mResults;
 }
 
+bool MockSearchEngine::isValidSearchStr() const
+{
+    return mValidSearchStr;
+}
+
 void MockSearchEngine::updateResults()
 {
-    std::vector<std::string> results = mSearcher->search(qPrintable(
-                mSearchStr));
-
     mResults.clear();
-    std::vector<std::string>::const_iterator resultsIter = results.begin();
-    for(; resultsIter != results.end(); ++resultsIter)
-        mResults.append( QString(resultsIter->c_str()) );
+
+    std::vector<std::string> results;
+    if(( mValidSearchStr = mSearcher->search(results, qPrintable(mSearchStr)) ))
+    {
+        std::vector<std::string>::const_iterator resultsIter = results.begin();
+        for(; resultsIter != results.end(); ++resultsIter)
+            mResults.append( QString(resultsIter->c_str()) );
+    }
 }
 
 }

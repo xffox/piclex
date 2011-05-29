@@ -25,6 +25,8 @@ public:
 
     virtual const QStringList &getResults() const;
 
+    bool isValidSearchStr() const;
+
 private:
     void updateResults();
 
@@ -34,6 +36,8 @@ private:
     QStringList mResults;
 
     QString mSearchStr;
+
+    bool mValidSearchStr;
 };
 
 }

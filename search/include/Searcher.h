@@ -19,7 +19,7 @@ public:
             DocProcessor *queryProcessor);
     ~Searcher();
 
-    std::vector<std::string> search(const std::string &query);
+    bool search(std::vector<std::string> &results, const std::string &query);
     void setPath(const std::string &path);
 
 private:

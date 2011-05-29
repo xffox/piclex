@@ -20,11 +20,11 @@ void SubsentenceGatherer::visit(const TreeIterator<ParseNode> &iterator)
     {
         size_t begin = (*iterator).getBeginPosition();
         size_t size = (*iterator).getSize();
-        mSubsentences.insert(mStr.substr(begin, size));
+        mSubsentences.push_back(mStr.substr(begin, size));
     }
 }
 
-const std::set<std::string> &SubsentenceGatherer::getSubsentences() const
+const std::vector<std::string> &SubsentenceGatherer::getSubsentences() const
 {
     return mSubsentences;
 }

@@ -24,6 +24,8 @@ add_library(search STATIC
     "src/DocDescription.cpp"
     "src/ImageDocProcessor.cpp"
     "src/SubsentenceGatherer.cpp"
+    "src/DocDescriptionGatherer.cpp"
+    "src/ImageDocDescription.cpp"
 
     "src/mock/WordDocProcessor.cpp"
     "src/mock/SimpleIndexMaker.cpp"

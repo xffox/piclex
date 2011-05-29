@@ -16,6 +16,8 @@ public:
     virtual bool setSearchStr(const QString &str) = 0;
 
     virtual const QStringList &getResults() const = 0;
+
+    virtual bool isValidSearchStr() const = 0;
 };
 
 }

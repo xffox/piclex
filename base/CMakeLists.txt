@@ -6,4 +6,5 @@ add_library(base STATIC
     "src/Logger.cpp"
     "src/Mutex.cpp"
     "src/FsUtil.cpp"
+    "src/BaseUtil.cpp"
     )
